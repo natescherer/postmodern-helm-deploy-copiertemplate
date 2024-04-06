@@ -125,9 +125,8 @@ repo_name:
 
 project_type:
   type: str
-  help: If you are creating another Copier template that will inherit from this one, choose Template. Otherwise, choose Standard.
+  help: The template is used to make your own private, customized template that will then make deployment repos customized with deployment info for your environment.
   choices:
-    - Standard
     - Template
 
 project_name:
@@ -144,13 +143,9 @@ project_website:
 
 project_visibility:
   type: str
-  help: Choose if you want this project to be Public or Private.
+  help: This project only makes private projects, as they will contain environment info for deployments.
   choices:
-    Public:
-      value: Public
-      validator: "{% if developer_platform == 'Azure DevOps' %}Not Supported on Azure DevOps{% endif %}"
-    Private:
-      value: Private
+    - Private
 
 license:
   type: str
