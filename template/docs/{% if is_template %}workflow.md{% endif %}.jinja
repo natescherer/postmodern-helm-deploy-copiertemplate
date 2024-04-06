@@ -2,6 +2,21 @@
 
 ## Creating New Project
 
+### Registry Type
+
+#### Azure Container Registry
+
+##### If Using Auth Mode 'Admin Credentials (Manually Specified)'
+
+1. In the Azure Portal, open the ACR, then go to `Settings > Access keys`
+1. Make sure `Admin user` is checked, then copy the value for `password`
+1. In Azure DevOps, open and edit the pipeline
+1. Click the Variables button, then create a variable as follows:
+    * Name: `AcrPasswordSecret`
+    * Value: The password you copied above
+    * Keep this value secret: `Checked`
+1. Click OK, then Save
+
 ## Applying to Existing Project
 
 To apply this template to an existing project, follow these steps:
