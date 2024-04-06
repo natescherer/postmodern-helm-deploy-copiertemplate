@@ -221,11 +221,6 @@ is_template:
   default: "{% if project_type == 'Template' %}true{% endif %}"
   when: false
 
-is_prerelease:
-  type: bool
-  default: "{% if lifecycle == 'Pre-Alpha' or lifecycle == 'Alpha' or lifecycle == 'Beta' %}true{% endif %}"
-  when: false
-
 should_create_repo:
   type: bool
   default: "{% if repo_actions == 'Create Repo' %}true{% endif %}"
