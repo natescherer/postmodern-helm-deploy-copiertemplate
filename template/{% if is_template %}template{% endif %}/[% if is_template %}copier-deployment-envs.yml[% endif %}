@@ -1,0 +1,33 @@
+# Here is where you define the Kubernetes environment(s) you want to be presented as options
+# for the Helm chart to be deployed to. See the workflow doc for instructions on how to configure.
+
+k8s_envs:
+  type: json
+  help: Choose k8s environments this script should deploy to.
+  multiselect: true
+  choices:
+    - Cluster 'aks-cluster-a', Namespace 'default': {
+          "deployment_grouping": "Primary",
+          "type": "aks",
+          "aks_cluster": "aks-cluster-a",
+          "aks_resource_group": "aks-cluster-a-rg",
+          "azdo_service_connection": "Prod Service Connection",
+          "namespace": "default"
+      }
+    - Cluster 'aks-cluster-a', Namespace 'monitor': {
+        "deployment_grouping": "Primary",
+          "type": "aks",
+          "aks_cluster": "aks-cluster-a",
+          "aks_resource_group": "aks-cluster-a-rg",
+          "azdo_service_connection": "Prod Service Connection",
+          "namespace": "monitor"
+      }
+    - Cluster 'aks-cluster-b', Namespace 'default': {
+          "deployment_grouping": "Primary",
+          "type": "aks",
+          "aks_cluster": "aks-cluster-b",
+          "aks_resource_group": "aks-cluster-b-rg",
+          "azdo_service_connection": "Prod Service Connection",
+          "namespace": "monitor"
+      }
+
