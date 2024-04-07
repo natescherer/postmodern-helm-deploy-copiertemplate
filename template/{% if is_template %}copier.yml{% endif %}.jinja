@@ -4,8 +4,8 @@ _min_copier_version: "9.1.1"
 _jinja_extensions:
   # External Dependencies
   - copier_templates_extensions.TemplateExtensionLoader
+  - cookiecutter.extensions.SlugifyExtension
   - jinja2_shell_extension.ShellExtension
-  - jinja2_slug.SlugExtension
   - jinja2_time.TimeExtension
   # Internal Dependencies
   - extensions/azure_devops_extension.py:AzureDevOpsExtension
@@ -219,7 +219,7 @@ helm_chart_name:
   help: The name of the Helm chart to deploy; what you'd provide to 'helm install'.
   when: "{{ project_type == 'Standard' }}"
 
-helm_deployment_name:
+helm_release_name:
   type: str
   help: The name of the Helm deployment that will be used with 'helm install'.
   default: "{{ helm_chart_name }}"
@@ -284,9 +284,19 @@ should_set_repo_settings:
   default: "{% if repo_actions == 'Create Repo' or repo_actions == 'Set Repo Rules' %}true{% endif %}"
   when: false
 
+acr_url:
+  type: str
+  default: "{% if container_registry_type == 'Azure Container Registry' %}{{ 'https://' + acr_name + '.azurecr.io' }}{% endif %}"
+  when: false
+
 helm_repo_name:
   type: str
-  default: "{% if container_registry_type == 'Public' %}{{ public_helm_repo_url.split('//') | last | slug }}{% elif container_registry_type == 'Azure Container Registry' %}{{ 'https://' + acr_name + '.azurecr.io' | last | slug }}{% endif %}"
+  default: "{% if container_registry_type == 'Public' %}{{ public_helm_repo_url.split('//') | last | slugify }}{% elif container_registry_type == 'Azure Container Registry' %}{{ acr_url.split('//') | last | slugify }}{% endif %}"
+  when: false
+
+helm_repo_url:
+  type: str
+  default: "{% if container_registry_type == 'Public' %}{{ public_helm_repo_url }}{% elif container_registry_type == 'Azure Container Registry' %}{{ acr_url }}{% endif %}"
   when: false
 
 ## Tasks
