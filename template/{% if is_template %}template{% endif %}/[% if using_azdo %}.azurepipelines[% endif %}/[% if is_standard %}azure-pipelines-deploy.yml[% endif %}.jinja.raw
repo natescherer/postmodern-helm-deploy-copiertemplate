@@ -14,7 +14,7 @@ variables:
   AcrName: {{ acr_name }}
   AcrChartPrefix: {{ acr_chart_prefix }}
 {%- endif %}
-{%- if acr_login_method == "Admin Credentials (Automatic via Service Connection)" %}
+{%- if acr_login_method == "Admin Credentials via Service Connection" %}
   AcrAzSubscriptionServiceConnection: {{ acr_service_connection }}
 {%- endif %}
   HelmRepoName: {{ helm_repo_name }}
