@@ -213,11 +213,6 @@ acr_service_connection:
   help: The name of the Azure DevOps Service Connection that has rights to the ACR.
   when: "{{ acr_login_method == 'Admin Credentials (Automatic via Service Connection)' }}"
 
-acr_chart_prefix:
-  type: str
-  help: (OPTIONAL) If you share an ACR between multiple teams, put a team name here to have your charts logically separated.
-  when: "{{ container_registry_type == 'Azure Container Registry' }}"
-
 helm_chart_name:
   type: str
   help: The name of the Helm chart to deploy; what you'd provide to 'helm install'.
@@ -231,7 +226,7 @@ helm_deployment_name:
 
 secret_storage_platform:
   type: str
-  help: Choose a secret storage platform you would like to use as part of your deployment:
+  help: Choose a secret storage platform you would like to use as part of your deployment.
   choices:
     - None
     - Azure Key Vault
