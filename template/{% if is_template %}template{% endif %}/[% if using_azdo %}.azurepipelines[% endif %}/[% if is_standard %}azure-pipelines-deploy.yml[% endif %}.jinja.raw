@@ -40,9 +40,10 @@ stages:
               HelmChartVersion: {% raw %}${{ parameters.HelmChartVersion }}{% endraw %}
             failOnStderr: true
 {%- for env in k8s_envs %}
-  - stage: {{ env["aks_cluster_name"] + "_" + env["namespace"] | slug | replace("-","_") }}
+{%- if env["deploy_group"] == "Primary" %}
+  - stage: {{ env["aks_cluster_name"] + "_" + env["namespace"] | slugify | replace("-","_") }}
     jobs:
-      - deployment: {{ env["aks_cluster_name"] + "_" + env["namespace"] | slug | replace("-","_") }}
+      - deployment: {{ env["aks_cluster_name"] + "_" + env["namespace"] | slugify | replace("-","_") }}
         environment: {{ env["aks_cluster_name"] }}
         strategy:
           runOnce:
@@ -59,4 +60,5 @@ stages:
 {%- endif %}
                     HelmChartVersion: {% raw %}${{ parameters.HelmChartVersion }}{% endraw %}
                     K8sNamespace: {{ env["namespace"] }}
+{%- endif %}
 {%- endfor %}

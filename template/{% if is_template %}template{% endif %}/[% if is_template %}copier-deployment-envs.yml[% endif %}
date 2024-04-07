@@ -6,28 +6,31 @@ k8s_envs:
   help: Choose k8s environments this script should deploy to.
   multiselect: true
   choices:
-    - Cluster 'aks-cluster-a', Namespace 'default': {
-          "deployment_grouping": "Primary",
-          "type": "aks",
-          "aks_cluster_name": "aks-cluster-a",
-          "aks_resource_group": "aks-cluster-a-rg",
-          "azdo_service_connection": "Prod Service Connection",
-          "namespace": "default"
+    - {
+        "deploy_group": "Primary",
+        "type": "aks",
+        "aks_cluster_name": "aks-cluster-a",
+        "aks_resource_group": "aks-cluster-a-rg",
+        "az_key_vault_name": "testkv",
+        "azdo_service_connection": "Prod Service Connection",
+        "namespace": "default"
       }
-    - Cluster 'aks-cluster-a', Namespace 'monitor': {
-        "deployment_grouping": "Primary",
-          "type": "aks",
-          "aks_cluster_name": "aks-cluster-a",
-          "aks_resource_group": "aks-cluster-a-rg",
-          "azdo_service_connection": "Prod Service Connection",
-          "namespace": "monitor"
+    - {
+        "deploy_group": "Primary",
+        "type": "aks",
+        "aks_cluster_name": "aks-cluster-a",
+        "aks_resource_group": "aks-cluster-a-rg",
+        "az_key_vault_name": "testkv",
+        "azdo_service_connection": "Prod Service Connection",
+        "namespace": "monitor"
       }
-    - Cluster 'aks-cluster-b', Namespace 'default': {
-          "deployment_grouping": "Primary",
-          "type": "aks",
-          "aks_cluster_name": "aks-cluster-b",
-          "aks_resource_group": "aks-cluster-b-rg",
-          "azdo_service_connection": "Prod Service Connection",
-          "namespace": "monitor"
+    - {
+        "deploy_group": "Primary",
+        "type": "aks",
+        "aks_cluster_name": "aks-cluster-b",
+        "aks_resource_group": "aks-cluster-b-rg",
+        "az_key_vault_name": "testkv",
+        "azdo_service_connection": "Prod Service Connection",
+        "namespace": "monitor"
       }
 
