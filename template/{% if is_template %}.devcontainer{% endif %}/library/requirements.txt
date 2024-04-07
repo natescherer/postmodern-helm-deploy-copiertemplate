@@ -3,6 +3,7 @@ copier-templates-extensions
 githubkit
 invoke
 jinja2-shell-extension
+jinja2-slug
 jinja2-time
 requests
 rich
