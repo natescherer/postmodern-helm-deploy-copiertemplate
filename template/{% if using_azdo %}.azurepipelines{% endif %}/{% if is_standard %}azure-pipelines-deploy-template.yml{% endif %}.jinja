@@ -8,7 +8,7 @@ steps:
   inputs:
     kubectlVersion: latest
 {%- if container_registry_type == "Azure Container Registry" %}
-{%- if acr_login_method == "Admin Credentials (Automatic via Service Connection)" %}
+{%- if acr_login_method == "Admin Credentials via Service Connection" %}
 - task: AzureCLI@2
   displayName: Authenticate to ACR
   inputs:
@@ -20,7 +20,7 @@ steps:
       $CredsObject = ConvertFrom-Json ($CredsJson -join "`n")
       helm registry login $(AcrName).azurecr.io --username $CredsObject.username --password $CredsObject.passwords[0].value
 {%- endif %}
-{%- if acr_login_method == "Admin Credentials (Manually Specified)" %}
+{%- if acr_login_method == "Admin Credentials via Pipeline Variable" %}
 - pwsh: |
     helm registry login $(AcrName).azurecr.io --username $(AcrName) --password $env:AcrPassword
   displayName: Authenticate to ACR
