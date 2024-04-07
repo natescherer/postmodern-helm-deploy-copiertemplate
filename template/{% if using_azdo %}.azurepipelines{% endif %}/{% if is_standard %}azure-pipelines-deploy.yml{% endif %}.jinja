@@ -41,9 +41,10 @@ stages:
             failOnStderr: true
 {%- for env in k8s_envs %}
 {%- if env["deploy_group"] == "Primary" %}
-  - stage: {{ env["aks_cluster_name"] + "_" + env["namespace"] | slugify | replace("-","_") }}
+{% set base_name = env["aks_cluster_name"] + "_" + env["namespace"] %}
+  - stage: {{ base_name | slugify | replace("-","_") }}
     jobs:
-      - deployment: {{ env["aks_cluster_name"] + "_" + env["namespace"] | slugify | replace("-","_") }}
+      - deployment: {{ base_name | slugify | replace("-","_") }}
         environment: {{ env["aks_cluster_name"] }}
         strategy:
           runOnce:
