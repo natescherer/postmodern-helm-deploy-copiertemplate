@@ -40,23 +40,23 @@ stages:
               HelmChartVersion: {% raw %}${{ parameters.HelmChartVersion }}{% endraw %}
             failOnStderr: true
 {%- for env in k8s_envs %}
-  - stage: {{ env.aks_name + "_" + env.namespace | slug | replace("-","_") }}
+  - stage: {{ env["aks_name"] + "_" + env["namespace"] | slug | replace("-","_") }}
     jobs:
-      - deployment: {{ env.aks_name + "_" + env.namespace | slug | replace("-","_") }}
-        environment: {{ env.aks_name }}
+      - deployment: {{ env["aks_name"] + "_" + env["namespace"] | slug | replace("-","_") }}
+        environment: {{ env["aks_name"] }}
         strategy:
           runOnce:
             deploy:
               steps:
                 - template: azure-pipelines-deploy-template.yml
                   parameters:
-                    AzAKSCluster: {{ env.aks_name }}
-                    AzAKSClusterResourceGroup: {{ env.aks_resource_group }}
-                    AzAKSClusterAzDOServiceConnection: {{ env.azdo_service_connection }}
+                    AzAKSCluster: {{ env["aks_name"] }}
+                    AzAKSClusterResourceGroup: {{ env["aks_resource_group"] }}
+                    AzAKSClusterAzDOServiceConnection: {{ env["azdo_service_connection"] }}
 {%- if secret_storage_platform == "Azure Key Vault" %}
-                    AzKeyVault: {{ env.az_key_vault_name }}
-                    AzKeyVaultAzDOServiceConnection: {{ env.azdo_service_connection }}
+                    AzKeyVault: {{ env["az_key_vault_name"] }}
+                    AzKeyVaultAzDOServiceConnection: {{ env["azdo_service_connection"] }}
 {%- endif %}
                     HelmChartVersion: {% raw %}${{ parameters.HelmChartVersion }}{% endraw %}
-                    K8sNamespace: {{ env.namespace }}
+                    K8sNamespace: {{ env["namespace"] }}
 {%- endfor %}
