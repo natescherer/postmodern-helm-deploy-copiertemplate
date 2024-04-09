@@ -28,11 +28,13 @@ steps:
     AcrPassword: $(AcrPasswordSecret)
 {%- endif %}
 {%- endif %}
+{%- if not using_oci_repo %}
 - pwsh: |
     helm repo add $(HelmRepoName) $(HelmRepoUrl)
     helm repo update
   displayName: Add & Update Helm Repo
   failOnStderr: true
+{%- else %}
 - task: AzureCLI@2
   displayName: Authenticate to AKS
   inputs:
@@ -55,12 +57,20 @@ steps:
 - pwsh: |
     $CurrentDeployment = helm list --namespace $env:K8sNamespace --filter $(HelmReleaseName) --output json
 
+{%- if using_oci_repo %}
+{%- if container_registry_type == "Azure Container Registry" %}
+    $HelmChartLocation = "oci://{{ acr_name }}.azurecr.io/helm/$(HelmChartName)"
+{%- endif %}
+{%- else %}
+    $HelmChartLocation = "$(HelmRepoName)/$(HelmChartName)",
+{%- endif %}
+
     if ($CurrentDeployment -ne "[]") {
       Write-Host "Helm deployment already exists; set arguments for an upgrade"
       $HelmArguments = @(
         "upgrade",
         "$(HelmReleaseName)",
-        "$(HelmRepoName)/$(HelmChartName)",
+        $HelmChartLocation,
         "--values values.yaml",
         "--version $env:HelmChartVersion"
         "--namespace $env:K8sNamespace",
@@ -73,7 +83,7 @@ steps:
       $HelmArguments = @(
         "install",
         "$(HelmReleaseName)",
-        "$(HelmRepoName)/$(HelmChartName)",
+        $HelmChartLocation,
         "--version $env:HelmChartVersion"
         "--values values.yaml",
         "--namespace $env:K8sNamespace",
@@ -94,8 +104,10 @@ steps:
     K8sNamespace: ${{ parameters.K8sNamespace }}
     {%- endraw %}
   failOnStderr: true
+{%- if not using_oci_repo %}
 - pwsh: |
     helm repo remove $(HelmRepoName) $(HelmRepoUrl)
   displayName: Remove Helm Repo
   failOnStderr: true
   condition: always()
+{%- endif %}
