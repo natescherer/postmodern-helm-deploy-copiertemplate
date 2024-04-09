@@ -34,7 +34,7 @@ steps:
     helm repo update
   displayName: Add & Update Helm Repo
   failOnStderr: true
-{%- else %}
+{%- endif %}
 - task: AzureCLI@2
   displayName: Authenticate to AKS
   inputs:
