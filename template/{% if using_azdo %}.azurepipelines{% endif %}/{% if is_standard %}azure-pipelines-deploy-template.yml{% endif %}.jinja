@@ -42,7 +42,9 @@ steps:
     azureSubscription: ${{ parameters.AzAKSClusterAzDOServiceConnection }}
     scriptType: pscore
     scriptLocation: inlineScript
-    inlineScript: az aks get-credentials --resource-group ${{ parameters.AzAKSClusterResourceGroup }} --name ${{ parameters.AzAKSCluster }} --admin --only-show-errors --overwrite-existing
+    inlineScript: |
+      az aks get-credentials --resource-group ${{ parameters.AzAKSClusterResourceGroup }} --name ${{ parameters.AzAKSCluster }} --only-show-errors --overwrite-existing --format azure
+      kubelogin convert-kubeconfig -l azurecli
     failOnStandardError: true
     {%- endraw %}
 {%- if secret_storage_platform == "Azure Key Vault" %}
