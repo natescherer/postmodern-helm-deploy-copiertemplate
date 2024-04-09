@@ -28,7 +28,7 @@ steps:
     AcrPassword: $(AcrPasswordSecret)
 {%- endif %}
 {%- endif %}
-{%- if not using_oci_repo %}
+{%- if container_registry_type == "Public" %}
 - pwsh: |
     helm repo add $(HelmRepoName) $(HelmRepoUrl)
     helm repo update
@@ -57,11 +57,10 @@ steps:
 - pwsh: |
     $CurrentDeployment = helm list --namespace $env:K8sNamespace --filter $(HelmReleaseName) --output json
 
-{%- if using_oci_repo %}
 {%- if container_registry_type == "Azure Container Registry" %}
     $HelmChartLocation = "oci://{{ acr_name }}.azurecr.io/helm/$(HelmChartName)"
 {%- endif %}
-{%- else %}
+{%- if container_registry_type == "Public" %}
     $HelmChartLocation = "$(HelmRepoName)/$(HelmChartName)",
 {%- endif %}
 
@@ -104,7 +103,7 @@ steps:
     K8sNamespace: ${{ parameters.K8sNamespace }}
     {%- endraw %}
   failOnStderr: true
-{%- if not using_oci_repo %}
+{%- if container_registry_type == "Public" %}
 - pwsh: |
     helm repo remove $(HelmRepoName) $(HelmRepoUrl)
   displayName: Remove Helm Repo
