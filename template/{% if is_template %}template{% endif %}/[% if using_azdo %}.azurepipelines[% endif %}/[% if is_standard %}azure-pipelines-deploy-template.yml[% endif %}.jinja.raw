@@ -40,7 +40,7 @@ steps:
   inputs:
     {%- raw %}
     azureSubscription: ${{ parameters.AzAKSClusterAzDOServiceConnection }}
-    scriptType: pwsh
+    scriptType: pscore
     scriptLocation: inlineScript
     inlineScript: az aks get-credentials --resource-group ${{ parameters.AzAKSClusterResourceGroup }} --name ${{ parameters.AzAKSCluster }} --admin --only-show-errors --overwrite-existing
     failOnStandardError: true
