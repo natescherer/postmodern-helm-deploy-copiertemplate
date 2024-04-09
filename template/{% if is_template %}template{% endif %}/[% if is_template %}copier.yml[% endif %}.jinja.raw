@@ -284,19 +284,19 @@ should_set_repo_settings:
   default: "{% if repo_actions == 'Create Repo' or repo_actions == 'Set Repo Rules' %}true{% endif %}"
   when: false
 
-acr_url:
+acr_domain:
   type: str
   default: "{% if container_registry_type == 'Azure Container Registry' %}{{ 'https://' + acr_name + '.azurecr.io' }}{% endif %}"
   when: false
 
 helm_repo_name:
   type: str
-  default: "{% if container_registry_type == 'Public' %}{{ public_helm_repo_url.split('//') | last | slugify }}{% elif container_registry_type == 'Azure Container Registry' %}{{ acr_url.split('//') | last | slugify }}{% endif %}"
+  default: "{% if container_registry_type == 'Public' %}{{ public_helm_repo_url.split('//') | last | slugify }}{% elif container_registry_type == 'Azure Container Registry' %}{{ acr_name + '.azurecr.io' | slugify }}{% endif %}"
   when: false
 
 helm_repo_url:
   type: str
-  default: "{% if container_registry_type == 'Public' %}{{ public_helm_repo_url }}{% elif container_registry_type == 'Azure Container Registry' %}{{ acr_url }}{% endif %}"
+  default: "{% if container_registry_type == 'Public' %}{{ public_helm_repo_url }}{% endif %}"
   when: false
 
 ## Tasks
