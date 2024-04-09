@@ -7,30 +7,33 @@ k8s_envs:
   multiselect: true
   choices:
     - {
+        "namespace": "default",
+        "aks_cluster_name": "aks-cluster-a",
         "deploy_group": "Primary",
         "type": "aks",
-        "aks_cluster_name": "aks-cluster-a",
         "aks_resource_group": "aks-cluster-a-rg",
-        "az_key_vault_name": "testkv",
-        "azdo_service_connection": "Prod Service Connection",
-        "namespace": "default"
+        "aks_service_connection": "Prod Service Connection",
+        "az_key_vault_name": "contosokv1",
+        "az_key_vault_service_connection": "Prod Service Connection"
       }
     - {
+        "namespace": "monitor",
+        "aks_cluster_name": "aks-cluster-a",
         "deploy_group": "Primary",
         "type": "aks",
-        "aks_cluster_name": "aks-cluster-a",
         "aks_resource_group": "aks-cluster-a-rg",
-        "az_key_vault_name": "testkv",
-        "azdo_service_connection": "Prod Service Connection",
-        "namespace": "monitor"
+        "aks_service_connection": "Prod Service Connection",
+        "az_key_vault_name": "contosokv1",
+        "az_key_vault_service_connection": "Prod Service Connection"
       }
     - {
-        "deploy_group": "Primary",
-        "type": "aks",
+        "namespace": "default",
         "aks_cluster_name": "aks-cluster-b",
+        "deploy_group": "Primary",
+        "type": "aks",
         "aks_resource_group": "aks-cluster-b-rg",
-        "az_key_vault_name": "testkv",
-        "azdo_service_connection": "Prod Service Connection",
-        "namespace": "monitor"
+        "aks_service_connection": "Prod Service Connection",
+        "az_key_vault_name": "contosokv1",
+        "az_key_vault_service_connection": "Prod Service Connection"
       }
 
