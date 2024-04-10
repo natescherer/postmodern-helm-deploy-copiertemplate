@@ -42,7 +42,7 @@ stages:
         steps:
           - pwsh: |
               $Date = Get-Date -Format "yyyyMMddHHmm"
-              Write-Host "##vso[build.updatebuildnumber]Chart-$env:HelmChartVersion_$Date"
+              Write-Host "##vso[build.updatebuildnumber]Chart-$($env:HelmChartVersion)_$Date"
             displayName: Calculate and set build number
             env:
               HelmChartVersion: {% raw %}${{ parameters.HelmChartVersion }}{% endraw %}
@@ -86,5 +86,6 @@ stages:
                   parameters:
                     AKSServiceConnection: {{ env["aks_service_connection"] }}
                     AzKeyVaultServiceConnection: {{ env["az_key_vault_service_connection"] }}
+                    HelmChartVersion: {% raw %}${{ parameters.HelmChartVersion }}{% endraw %}
 {%- endif %}
 {%- endfor %}
