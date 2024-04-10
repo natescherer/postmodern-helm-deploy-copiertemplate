@@ -1,3 +1,4 @@
+steps:
 {%- if secret_storage_platform == "Azure Key Vault" %}
 - task: AzureKeyVault@2
   displayName: Get Secrets from Key Vault
