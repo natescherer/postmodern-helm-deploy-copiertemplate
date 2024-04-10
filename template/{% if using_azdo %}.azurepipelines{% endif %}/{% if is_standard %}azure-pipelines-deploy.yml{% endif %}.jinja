@@ -14,9 +14,6 @@ parameters:
 variables:
 {%- if container_registry_type == "Azure Container Registry" %}
   AcrName: {{ acr_name }}
-{%- if acr_login_method == "Admin Credentials via Service Connection" %}
-  AcrAzSubscriptionServiceConnection: {{ acr_service_connection }}
-{%- endif %}
 {%- elif container_registry_type == Public %}
   HelmRepoName: {{ helm_repo_name }}
   HelmRepoUrl: {{ helm_repo_url }}
@@ -57,13 +54,12 @@ stages:
     variables:
       K8sNamespace: {{ env["namespace"] }}
       {%- if env["type"] == "aks" %}
-      AKSServiceConnection: {{ env["aks_service_connection"] }}
       AKSCluster: {{ env["aks_cluster_name"] }}
       AKSClusterResourceGroup: {{ env["aks_resource_group"] }}
       {%- endif %}
       {%- if secret_storage_platform == "Azure Key Vault" %}
-      AzKeyVaultServiceConnection: {{ env["az_key_vault_service_connection"] }}
       AzKeyVaultName: {{ env["az_key_vault_name"] }}
+      AzKeyVaultSecretsFilter: secret1
       {%- endif %}
     jobs:
       - deployment: {{ base_name | slugify | replace("-","_") }}
@@ -79,7 +75,7 @@ stages:
                 - task: AzureCLI@2
                   displayName: Authenticate to AKS
                   inputs:
-                    azureSubscription: $(AKSServiceConnection)
+                    azureSubscription: {{ env["aks_service_connection"] }}
                     scriptType: pscore
                     scriptLocation: inlineScript
                     inlineScript: |
@@ -88,5 +84,7 @@ stages:
                     failOnStandardError: true
                 {%- endif %}
                 - template: azure-pipelines-deploy-steps-part2.yml
+                  parameters:
+                    AzKeyVaultServiceConnection: {{ env["az_key_vault_service_connection"] }}
 {%- endif %}
 {%- endfor %}
