@@ -9,7 +9,7 @@ steps:
     RunAsPreJob: false
 {%- endif %}
 - pwsh: |
-    $CurrentDeployment = helm list --namespace $env:K8sNamespace --filter $(HelmReleaseName) --output json
+    $CurrentDeployment = helm list --namespace $(K8sNamespace) --filter $(HelmReleaseName) --output json
 
     if ($CurrentDeployment -ne "[]") {
       Write-Host "Helm deployment already exists; set arguments for an upgrade"
