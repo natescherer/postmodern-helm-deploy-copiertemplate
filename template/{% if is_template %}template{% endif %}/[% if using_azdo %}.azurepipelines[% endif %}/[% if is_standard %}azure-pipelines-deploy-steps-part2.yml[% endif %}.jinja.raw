@@ -12,7 +12,6 @@ steps:
   displayName: Helm Install/Upgrade
   inputs:
     azureSubscription: {% raw %}${{ parameters.AKSServiceConnection }}{% endraw %}
-    failOnStandardError: true
     scriptType: pscore
     scriptLocation: inlineScript
     inlineScript: |
