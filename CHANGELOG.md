@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [0.1.20] - 2024-04-10
 ### Fixed
 - Indentation on AzureKeyVault Azure Pipelines task
 
@@ -91,7 +93,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release
 
-[Unreleased]: https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/compare/v0.1.19..HEAD
+[Unreleased]: https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/compare/v0.1.20..HEAD
+[0.1.20]: https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/compare/v0.1.19..v0.1.20
 [0.1.19]: https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/compare/v0.1.18..v0.1.19
 [0.1.18]: https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/compare/v0.1.17..v0.1.18
 [0.1.17]: https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/compare/v0.1.16..v0.1.17
