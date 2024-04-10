@@ -51,7 +51,7 @@ steps:
       }
 {%- if container_registry_type == "Public" %}
 - pwsh: |
-    helm repo remove $(HelmRepoName) $(HelmRepoUrl)
+    helm repo remove $(HelmRepoName)
   displayName: Remove Helm Repo
   failOnStderr: true
   condition: always()
