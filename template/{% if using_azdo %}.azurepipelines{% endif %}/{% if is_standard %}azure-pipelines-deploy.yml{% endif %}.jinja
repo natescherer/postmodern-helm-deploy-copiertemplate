@@ -84,6 +84,7 @@ stages:
                 {%- endif %}
                 - template: azure-pipelines-deploy-steps-part2.yml
                   parameters:
+                    AKSServiceConnection: {{ env["aks_service_connection"] }}
                     AzKeyVaultServiceConnection: {{ env["az_key_vault_service_connection"] }}
 {%- endif %}
 {%- endfor %}
