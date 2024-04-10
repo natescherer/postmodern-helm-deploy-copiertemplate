@@ -186,7 +186,6 @@ container_registry_type:
   choices:
     Public & Unauthenticated Registry:
       value: Public
-      validator: Not Currently Implemented
     Azure Container Registry:
       value: Azure Container Registry
   when: "{{ project_type == 'Standard' }}"
