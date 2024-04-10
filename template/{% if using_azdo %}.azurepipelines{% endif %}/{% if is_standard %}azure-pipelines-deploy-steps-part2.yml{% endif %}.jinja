@@ -1,12 +1,12 @@
 steps:
 {%- if secret_storage_platform == "Azure Key Vault" %}
 - task: AzureKeyVault@2
-    displayName: Get Secrets from Key Vault
-    inputs:
-      azureSubscription: {% raw %}${{ parameters.AzKeyVaultServiceConnection }}{% endraw %}
-      KeyVaultName: $(AzKeyVaultName)
-      SecretsFilter: 'secret1'
-      RunAsPreJob: false
+  displayName: Get Secrets from Key Vault
+  inputs:
+    azureSubscription: {% raw %}${{ parameters.AzKeyVaultServiceConnection }}{% endraw %}
+    KeyVaultName: $(AzKeyVaultName)
+    SecretsFilter: 'secret1'
+    RunAsPreJob: false
 {%- endif %}
 - pwsh: |
     $CurrentDeployment = helm list --namespace $env:K8sNamespace --filter $(HelmReleaseName) --output json
