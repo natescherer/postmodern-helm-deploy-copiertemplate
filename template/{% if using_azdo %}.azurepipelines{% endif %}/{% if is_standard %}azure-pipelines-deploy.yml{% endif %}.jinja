@@ -1,3 +1,6 @@
+{%- set deploy_group_match = "Primary" %}
+{%- set pool_name = "" %}
+
 name: $(BuildId)
 
 trigger:
@@ -20,10 +23,19 @@ variables:
   HelmRepoUrl: {{ helm_repo_url }}
 {%- endif %}
   HelmChartName: {{ helm_chart_name }}
+{%- if container_registry_type == "Azure Container Registry" %}
+  HelmChartLocation: oci://$(AcrName).azurecr.io/helm/$(HelmChartName)
+{%- elif container_registry_type == "Public" %}
+  HelmChartLocation: $(HelmRepoName)/$(HelmChartName)
+{%- endif %}
   HelmReleaseName: {{ helm_release_name }}
 
+{%- if pool_name %}
+pool: {{ pool_name }}
+{%- else %}
 pool:
   vmImage: ubuntu-latest
+{%- endif %}
 
 stages:
   - stage:
@@ -40,66 +52,30 @@ stages:
               HelmChartVersion: {% raw %}${{ parameters.HelmChartVersion }}{% endraw %}
             failOnStderr: true
 {%- for env in k8s_envs %}
-{%- if env["deploy_group"] == "Primary" %}
+{%- if env["deploy_group"] == deploy_group_match %}
 {% set base_name = env["aks_cluster_name"] + "_" + env["namespace"] %}
   - stage: {{ base_name | slugify | replace("-","_") }}
     variables:
       K8sNamespace: {{ env["namespace"] }}
-{%- if env["type"] == "aks" %}
+      {%- if env["type"] == "aks" %}
       AKSServiceConnection: {{ env["aks_service_connection"] }}
       AKSCluster: {{ env["aks_cluster_name"] }}
       AKSClusterResourceGroup: {{ env["aks_resource_group"] }}
-{%- endif %}
-{%- if secret_storage_platform == "Azure Key Vault" %}
+      {%- endif %}
+      {%- if secret_storage_platform == "Azure Key Vault" %}
       AzKeyVaultServiceConnection: {{ env["az_key_vault_service_connection"] }}
       AzKeyVaultName: {{ env["az_key_vault_name"] }}
-{%- endif %}
+      {%- endif %}
     jobs:
       - deployment: {{ base_name | slugify | replace("-","_") }}
         environment: {{ env["aks_cluster_name"] }}
         strategy:
           runOnce:
             deploy:
-              steps:
-              - task: HelmInstaller@1
-                displayName: Install Helm
-                inputs: 
-                  helmVersionToInstall: latest
-              - task: KubectlInstaller@0
-                displayName: Install Kubectl
-                inputs:
-                  kubectlVersion: latest
-{%- if env["type"] == "aks" %}
+              - template: azure-pipelines-deploy-steps-part1.yml
+              {%- if env["type"] == "aks" %}
               - task: KubeloginInstaller@0
                 displayName: Install Kubelogin
-{%- endif %}
-{%- if container_registry_type == "Azure Container Registry" %}
-{%- if acr_login_method == "Admin Credentials via Service Connection" %}
-              - task: AzureCLI@2
-                displayName: Authenticate to ACR
-                inputs:
-                  azureSubscription: $(AcrAzSubscriptionServiceConnection)
-                  scriptType: pscore
-                  scriptLocation: inlineScript
-                  inlineScript: |
-                    $CredsJson = az acr credential show --name $(AcrName) --only-show-errors
-                    $CredsObject = ConvertFrom-Json ($CredsJson -join "`n")
-                    helm registry login $(AcrName).azurecr.io --username $CredsObject.username --password $CredsObject.passwords[0].value
-{%- elif acr_login_method == "Admin Credentials via Pipeline Variable" %}
-              - pwsh: |
-                  helm registry login $(AcrName).azurecr.io --username $(AcrName) --password $env:AcrPassword
-                displayName: Authenticate to ACR
-                env:
-                  AcrPassword: $(AcrPasswordSecret)
-{%- endif %}
-{%- endif %}
-{%- if container_registry_type == "Public" %}
-              - pwsh: |
-                  helm repo add $(HelmRepoName) $(HelmRepoUrl)
-                  helm repo update
-                displayName: Add & Update Helm Repo
-                failOnStderr: true
-{%- endif %}
               - task: AzureCLI@2
                 displayName: Authenticate to AKS
                 inputs:
@@ -110,66 +86,7 @@ stages:
                     az aks get-credentials --resource-group $(AKSClusterResourceGroup) --name $(AKSCluster) --only-show-errors --overwrite-existing --format azure
                     kubelogin convert-kubeconfig -l azurecli
                   failOnStandardError: true
-{%- if secret_storage_platform == "Azure Key Vault" %}
-              - task: AzureKeyVault@2
-                displayName: Get Secrets from Key Vault
-                inputs:
-                  azureSubscription: $(AzKeyVaultServiceConnection)
-                  KeyVaultName: $(AzKeyVaultName)
-                  SecretsFilter: 'secret1'
-                  RunAsPreJob: false
-{%- endif %}
-              - pwsh: |
-                  $CurrentDeployment = helm list --namespace $env:K8sNamespace --filter $(HelmReleaseName) --output json
-
-{%- if container_registry_type == "Azure Container Registry" %}
-                  $HelmChartLocation = "oci://$(AcrName).azurecr.io/helm/$(HelmChartName)"
-{%- elif container_registry_type == "Public" %}
-                  $HelmChartLocation = "$(HelmRepoName)/$(HelmChartName)",
-{%- endif %}
-
-                  if ($CurrentDeployment -ne "[]") {
-                    Write-Host "Helm deployment already exists; set arguments for an upgrade"
-                    $HelmArguments = @(
-                      "upgrade",
-                      "$(HelmReleaseName)",
-                      $HelmChartLocation,
-                      "--values values.yaml",
-                      "--version $env:HelmChartVersion"
-                      "--namespace $(K8sNamespace)",
-                      "--atomic",
-                      "--cleanup-on-fail",
-                      "--wait"
-                    )
-                  } else {
-                    Write-Host "Helm deployment doesn't exist; set arguments for an install"
-                    $HelmArguments = @(
-                      "install",
-                      "$(HelmReleaseName)",
-                      $HelmChartLocation,
-                      "--version $env:HelmChartVersion"
-                      "--values values.yaml",
-                      "--namespace $(K8sNamespace)",
-                      "--wait"
-                    )
-                  }
-
-                  # Add --set arguments here, if needed
-
-                  $ProcessReturn = Start-Process -FilePath "helm" -ArgumentList $HelmArguments -PassThru -Wait
-                  if ($ProcessReturn.ExitCode -ne 0) {
-                    throw "Helm failed!"
-                  }
-                displayName: Helm Install/Upgrade
-                env:
-                  HelmChartVersion: {% raw %}${{ parameters.HelmChartVersion }}{% endraw %}
-                failOnStderr: true
-{%- if container_registry_type == "Public" %}
-              - pwsh: |
-                  helm repo remove $(HelmRepoName) $(HelmRepoUrl)
-                displayName: Remove Helm Repo
-                failOnStderr: true
-                condition: always()
-{%- endif %}
+              {%- endif %}
+              - template: azure-pipelines-deploy-steps-part2.yml
 {%- endif %}
 {%- endfor %}
