@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Fixed
+- Helm install step no longer set to fail on stderr, as helm now writes there for non-errors
 
 ## [0.1.22] - 2024-04-10
 ### Fixed
