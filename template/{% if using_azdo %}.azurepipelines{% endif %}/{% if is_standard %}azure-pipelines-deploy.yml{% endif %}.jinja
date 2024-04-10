@@ -59,7 +59,6 @@ stages:
       {%- endif %}
       {%- if secret_storage_platform == "Azure Key Vault" %}
       AzKeyVaultName: {{ env["az_key_vault_name"] }}
-      AzKeyVaultSecretsFilter: secret1
       {%- endif %}
     jobs:
       - deployment: {{ base_name | slugify | replace("-","_") }}
