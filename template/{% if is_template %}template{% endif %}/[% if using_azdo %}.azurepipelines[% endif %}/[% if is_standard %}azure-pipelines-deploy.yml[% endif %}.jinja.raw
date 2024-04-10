@@ -14,7 +14,7 @@ parameters:
 variables:
 {%- if container_registry_type == "Azure Container Registry" %}
   AcrName: {{ acr_name }}
-{%- elif container_registry_type == Public %}
+{%- elif container_registry_type == "Public" %}
   HelmRepoName: {{ helm_repo_name }}
   HelmRepoUrl: {{ helm_repo_url }}
 {%- endif %}
