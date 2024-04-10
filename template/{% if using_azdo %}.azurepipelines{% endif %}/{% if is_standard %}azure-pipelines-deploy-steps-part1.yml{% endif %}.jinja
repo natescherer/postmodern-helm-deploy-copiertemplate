@@ -12,7 +12,7 @@ steps:
 - task: AzureCLI@2
   displayName: Authenticate to ACR
   inputs:
-    azureSubscription: $(AcrAzSubscriptionServiceConnection)
+    azureSubscription: {{ acr_service_connection }}
     scriptType: pscore
     scriptLocation: inlineScript
     inlineScript: |
