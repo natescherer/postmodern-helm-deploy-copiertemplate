@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [0.1.21] - 2024-04-10
 ### Fixed
 - Azure DevOps Helm deploy now done inside Azure CLI context
 
@@ -95,7 +97,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release
 
-[Unreleased]: https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/compare/v0.1.20..HEAD
+[Unreleased]: https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/compare/v0.1.21..HEAD
+[0.1.21]: https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/compare/v0.1.20..v0.1.21
 [0.1.20]: https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/compare/v0.1.19..v0.1.20
 [0.1.19]: https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/compare/v0.1.18..v0.1.19
 [0.1.18]: https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/compare/v0.1.17..v0.1.18

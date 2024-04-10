@@ -8,45 +8,48 @@ steps:
     SecretsFilter: 'secret1'
     RunAsPreJob: false
 {%- endif %}
-- pwsh: |
-    $CurrentDeployment = helm list --namespace $env:K8sNamespace --filter $(HelmReleaseName) --output json
-
-    if ($CurrentDeployment -ne "[]") {
-      Write-Host "Helm deployment already exists; set arguments for an upgrade"
-      $HelmArguments = @(
-        "upgrade",
-        "$(HelmReleaseName)",
-        "$(HelmChartLocation)",
-        "--values values.yaml",
-        "--version $env:HelmChartVersion"
-        "--namespace $(K8sNamespace)",
-        "--atomic",
-        "--cleanup-on-fail",
-        "--wait"
-      )
-    } else {
-      Write-Host "Helm deployment doesn't exist; set arguments for an install"
-      $HelmArguments = @(
-        "install",
-        "$(HelmReleaseName)",
-        "$(HelmChartLocation)",
-        "--version $env:HelmChartVersion"
-        "--values values.yaml",
-        "--namespace $(K8sNamespace)",
-        "--wait"
-      )
-    }
-
-    # Add --set arguments here, if needed
-
-    $ProcessReturn = Start-Process -FilePath "helm" -ArgumentList $HelmArguments -PassThru -Wait
-    if ($ProcessReturn.ExitCode -ne 0) {
-      throw "Helm failed!"
-    }
+- task: AzureCLI@2
   displayName: Helm Install/Upgrade
-  env:
-    HelmChartVersion: {% raw %}${{ parameters.HelmChartVersion }}{% endraw %}
-  failOnStderr: true
+  inputs:
+    azureSubscription: {% raw %}${{ parameters.AKSServiceConnection }}{% endraw %}
+    failOnStandardError: true
+    scriptType: pscore
+    scriptLocation: inlineScript
+    inlineScript: |
+      $CurrentDeployment = helm list --namespace $(K8sNamespace) --filter $(HelmReleaseName) --output json
+
+      if ($CurrentDeployment -ne "[]") {
+        Write-Host "Helm deployment already exists; set arguments for an upgrade"
+        $HelmArguments = @(
+          "upgrade",
+          "$(HelmReleaseName)",
+          "$(HelmChartLocation)",
+          "--values values.yaml",
+          "--version {% raw %}${{ parameters.HelmChartVersion }}{% endraw %}"
+          "--namespace $(K8sNamespace)",
+          "--atomic",
+          "--cleanup-on-fail",
+          "--wait"
+        )
+      } else {
+        Write-Host "Helm deployment doesn't exist; set arguments for an install"
+        $HelmArguments = @(
+          "install",
+          "$(HelmReleaseName)",
+          "$(HelmChartLocation)",
+          "--version {% raw %}${{ parameters.HelmChartVersion }}{% endraw %}"
+          "--values values.yaml",
+          "--namespace $(K8sNamespace)",
+          "--wait"
+        )
+      }
+
+      # Add --set arguments here, if needed
+
+      $ProcessReturn = Start-Process -FilePath "helm" -ArgumentList $HelmArguments -PassThru -Wait
+      if ($ProcessReturn.ExitCode -ne 0) {
+        throw "Helm failed!"
+      }
 {%- if container_registry_type == "Public" %}
 - pwsh: |
     helm repo remove $(HelmRepoName) $(HelmRepoUrl)
