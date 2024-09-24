@@ -1,39 +1,102 @@
 # Here is where you define the Kubernetes environment(s) you want to be presented as options
 # for the Helm chart to be deployed to. See the workflow doc for instructions on how to configure.
 
+# IMPORTANT NOTE: Make sure that, if you have any dependencies between environments, that dependent envs
+# are listed below the envs they depend on.
+
 k8s_envs:
   type: json
   help: Choose k8s environments this script should deploy to.
   multiselect: true
   choices:
+    # Multi-Region Azure Kubernetes Service Example Part 1
     - {
-        "namespace": "default",
-        "aks_cluster_name": "aks-cluster-a",
-        "deploy_group": "Primary",
-        "type": "aks",
-        "aks_resource_group": "aks-cluster-a-rg",
-        "aks_service_connection": "Prod Service Connection",
+        "k8s_ns": "app",
+        "group": "region1",
+        "k8s_cluster": "region1-dev",
+        "k8s_type": "aks",
+        "aks_resource_group": "region1-dev-rg",
+        "aks_service_connection": "Dev Connection",
         "az_key_vault_name": "contosokv1",
-        "az_key_vault_service_connection": "Prod Service Connection"
+        "az_key_vault_service_connection": "Dev Connection",
+        "azdo_pool_type": "hosted",
+        "azdo_pool_name": "ubuntu-latest",
+        "azdo_stage_name": "region1_dev_app",
+        "azdo_depends_on": ""
       }
+    # Multi-Region Azure Kubernetes Service Example Part 2
     - {
-        "namespace": "monitor",
-        "aks_cluster_name": "aks-cluster-a",
-        "deploy_group": "Primary",
-        "type": "aks",
-        "aks_resource_group": "aks-cluster-a-rg",
-        "aks_service_connection": "Prod Service Connection",
+        "k8s_ns": "app",
+        "group": "region1",
+        "k8s_cluster": "region1-prd",
+        "k8s_type": "aks",
+        "aks_resource_group": "region1-prd-rg",
+        "aks_service_connection": "Prod Connection",
         "az_key_vault_name": "contosokv1",
-        "az_key_vault_service_connection": "Prod Service Connection"
+        "az_key_vault_service_connection": "Prod Connection",
+        "azdo_pool_type": "hosted",
+        "azdo_pool_name": "ubuntu-latest",
+        "azdo_stage_name": "region1_prd_app",
+        "azdo_depends_on": "region1_dev_app"
       }
+    # Multi-Region Azure Kubernetes Service Example Part 3
     - {
-        "namespace": "default",
-        "aks_cluster_name": "aks-cluster-b",
-        "deploy_group": "Primary",
-        "type": "aks",
-        "aks_resource_group": "aks-cluster-b-rg",
-        "aks_service_connection": "Prod Service Connection",
+        "k8s_ns": "app",
+        "group": "region2",
+        "k8s_cluster": "region2-dev",
+        "k8s_type": "aks",
+        "aks_resource_group": "region2-dev-rg",
+        "aks_service_connection": "Dev Connection",
         "az_key_vault_name": "contosokv1",
-        "az_key_vault_service_connection": "Prod Service Connection"
+        "az_key_vault_service_connection": "Dev Connection",
+        "azdo_pool_type": "hosted",
+        "azdo_pool_name": "ubuntu-latest",
+        "azdo_stage_name": "region2_dev_app",
+        "azdo_depends_on": ""
+      }
+    # Multi-Region Azure Kubernetes Service Example Part 4
+    - {
+        "k8s_ns": "app",
+        "group": "region2",
+        "k8s_cluster": "region2-prd",
+        "k8s_type": "aks",
+        "aks_resource_group": "region2-prd-rg",
+        "aks_service_connection": "Prod Connection",
+        "az_key_vault_name": "contosokv1",
+        "az_key_vault_service_connection": "Prod Connection",
+        "azdo_pool_type": "hosted",
+        "azdo_pool_name": "ubuntu-latest",
+        "azdo_stage_name": "region2_prd_app",
+        "azdo_depends_on": "region2_dev_app"
+      }
+    # Alternate Namespace Azure Kubernetes Service Example Part 1
+    - {
+        "k8s_ns": "monitor",
+        "group": "region1",
+        "k8s_cluster": "region1-dev",
+        "k8s_type": "aks",
+        "aks_resource_group": "region1-dev-rg",
+        "aks_service_connection": "Dev Connection",
+        "az_key_vault_name": "contosokv1",
+        "az_key_vault_service_connection": "Dev Connection",
+        "azdo_pool_type": "hosted",
+        "azdo_pool_name": "ubuntu-latest",
+        "azdo_stage_name": "region1_dev_monitor",
+        "azdo_depends_on": ""
+      }
+    # Alternate Namespace Azure Kubernetes Service Example Part 2
+    - {
+        "k8s_ns": "monitor",
+        "group": "region1",
+        "k8s_cluster": "region1-prd",
+        "k8s_type": "aks",
+        "aks_resource_group": "region1-prd-rg",
+        "aks_service_connection": "Prod Connection",
+        "az_key_vault_name": "contosokv1",
+        "az_key_vault_service_connection": "Prod Connection",
+        "azdo_pool_type": "hosted",
+        "azdo_pool_name": "ubuntu-latest",
+        "azdo_stage_name": "region1_prd_monitor",
+        "azdo_depends_on": "region1_dev_monitor"
       }
 
