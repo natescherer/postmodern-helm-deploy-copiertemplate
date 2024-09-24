@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/compare/v0.2.1...v0.2.2) (2024-09-24)
+
+
+### Features
+
+* Make 'azdo_depends_on' environment setting optional ([adc3289](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/commit/adc328931dfd1043b7472ff99f2d042c30aba3c7))
+
 ## [0.2.1](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/compare/v0.2.0...v0.2.1) (2024-09-24)
 
 
