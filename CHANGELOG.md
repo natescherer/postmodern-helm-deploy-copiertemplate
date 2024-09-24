@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/compare/v0.2.0...v0.2.1) (2024-09-24)
+
+
+### Features
+
+* Overhaul azdo deployment workflow ([35530ab](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/commit/35530ab5004db0001b44135ddb6a1d25cdb6721d))
+
 ## [0.2.0](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/compare/v0.0.1...v0.2.0) (2024-09-23)
 
 
