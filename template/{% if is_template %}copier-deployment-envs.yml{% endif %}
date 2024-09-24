@@ -22,7 +22,7 @@ k8s_envs:
         "azdo_pool_type": "hosted",
         "azdo_pool_name": "ubuntu-latest",
         "azdo_stage_name": "region1_dev_app",
-        "azdo_depends_on": ""
+        "azdo_depends_on": "''"
       }
     # Multi-Region Azure Kubernetes Service Example Part 2
     - {
@@ -52,7 +52,7 @@ k8s_envs:
         "azdo_pool_type": "hosted",
         "azdo_pool_name": "ubuntu-latest",
         "azdo_stage_name": "region2_dev_app",
-        "azdo_depends_on": ""
+        "azdo_depends_on": "''"
       }
     # Multi-Region Azure Kubernetes Service Example Part 4
     - {
@@ -82,7 +82,7 @@ k8s_envs:
         "azdo_pool_type": "hosted",
         "azdo_pool_name": "ubuntu-latest",
         "azdo_stage_name": "region1_dev_monitor",
-        "azdo_depends_on": ""
+        "azdo_depends_on": "''"
       }
     # Alternate Namespace Azure Kubernetes Service Example Part 2
     - {
