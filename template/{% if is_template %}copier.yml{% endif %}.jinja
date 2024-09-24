@@ -212,13 +212,6 @@ helm_release_name:
   default: "{{ helm_chart_name }}"
   when: "{{ project_type == 'Standard' }}"
 
-secret_storage_platform:
-  type: str
-  help: Choose a secret storage platform you would like to use as part of your deployment.
-  choices:
-    - None
-    - Azure Key Vault
-
 ## Computed Values
 
 using_github:
