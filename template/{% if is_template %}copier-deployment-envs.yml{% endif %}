@@ -11,10 +11,10 @@ k8s_envs:
   choices:
     # Multi-Region Azure Kubernetes Service Example Part 1
     - {
-        "k8s_ns": "app",
-        "group": "region1",
-        "k8s_cluster": "region1-dev",
+        "display_name": "Region:1 NS:app Env:Dev",
         "k8s_type": "aks",
+        "k8s_cluster": "region1-dev",
+        "k8s_ns": "app",
         "aks_resource_group": "region1-dev-rg",
         "aks_service_connection": "Dev Connection",
         "az_key_vault_name": "contosokv1",
@@ -26,10 +26,10 @@ k8s_envs:
       }
     # Multi-Region Azure Kubernetes Service Example Part 2
     - {
-        "k8s_ns": "app",
-        "group": "region1",
-        "k8s_cluster": "region1-prd",
+        "display_name": "Region:1 NS:app Env:Prd",
         "k8s_type": "aks",
+        "k8s_cluster": "region1-prd",
+        "k8s_ns": "app",
         "aks_resource_group": "region1-prd-rg",
         "aks_service_connection": "Prod Connection",
         "az_key_vault_name": "contosokv1",
@@ -41,10 +41,10 @@ k8s_envs:
       }
     # Multi-Region Azure Kubernetes Service Example Part 3
     - {
-        "k8s_ns": "app",
-        "group": "region2",
-        "k8s_cluster": "region2-dev",
+        "display_name": "Region:2 NS:app Env:Dev",
         "k8s_type": "aks",
+        "k8s_cluster": "region2-dev",
+        "k8s_ns": "app",
         "aks_resource_group": "region2-dev-rg",
         "aks_service_connection": "Dev Connection",
         "az_key_vault_name": "contosokv1",
@@ -56,10 +56,10 @@ k8s_envs:
       }
     # Multi-Region Azure Kubernetes Service Example Part 4
     - {
-        "k8s_ns": "app",
-        "group": "region2",
-        "k8s_cluster": "region2-prd",
+        "display_name": "Region:2 NS:app Env:Prd",
         "k8s_type": "aks",
+        "k8s_cluster": "region2-prd",
+        "k8s_ns": "app",
         "aks_resource_group": "region2-prd-rg",
         "aks_service_connection": "Prod Connection",
         "az_key_vault_name": "contosokv1",
@@ -71,10 +71,10 @@ k8s_envs:
       }
     # Alternate Namespace Azure Kubernetes Service Example Part 1
     - {
-        "k8s_ns": "monitor",
-        "group": "region1",
-        "k8s_cluster": "region1-dev",
+        "display_name": "Region:1 NS:monitor Env:Dev",
         "k8s_type": "aks",
+        "k8s_cluster": "region1-dev",
+        "k8s_ns": "monitor",
         "aks_resource_group": "region1-dev-rg",
         "aks_service_connection": "Dev Connection",
         "az_key_vault_name": "contosokv1",
@@ -86,10 +86,10 @@ k8s_envs:
       }
     # Alternate Namespace Azure Kubernetes Service Example Part 2
     - {
-        "k8s_ns": "monitor",
-        "group": "region1",
-        "k8s_cluster": "region1-prd",
+        "display_name": "Region:1 NS:monitor Env:Prd",
         "k8s_type": "aks",
+        "k8s_cluster": "region1-prd",
+        "k8s_ns": "monitor",
         "aks_resource_group": "region1-prd-rg",
         "aks_service_connection": "Prod Connection",
         "az_key_vault_name": "contosokv1",
