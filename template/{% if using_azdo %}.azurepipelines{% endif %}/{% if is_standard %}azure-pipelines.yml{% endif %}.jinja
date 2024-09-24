@@ -49,7 +49,9 @@ stages:
     pool:
       vmImage: {{ env["azdo_pool_name"] }}
     {%- endif %}
+    {%- if env["azdo_depends_on"] %}
     dependsOn: {{ env["azdo_depends_on"] }}
+    {%- endif %}
     variables:
       K8sNamespace: {{ env["k8s_ns"] }}
       {%- if env["k8s_type"] == "aks" %}
