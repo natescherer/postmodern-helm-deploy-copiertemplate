@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.11](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/compare/v0.2.10...v0.2.11) (2024-09-25)
+
+
+### Bug Fixes
+
+* Fix trunk config for standard projects ([546bd32](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/commit/546bd3241c1af450f12e2956bf73a558ebc34482))
+
 ## [0.2.10](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/compare/v0.2.9...v0.2.10) (2024-09-25)
 
 
