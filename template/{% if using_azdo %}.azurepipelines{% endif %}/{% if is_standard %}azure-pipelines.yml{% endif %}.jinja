@@ -3,7 +3,7 @@ name: $(BuildId)
 trigger:
   branches:
     exclude:
-    - '*'
+    - "*"
 
 parameters:
   - name: HelmChartVersion
@@ -23,6 +23,7 @@ variables:
   HelmChartLocation: $(HelmRepoName)/$(HelmChartName)
 {%- endif %}
   HelmReleaseName: {{ helm_release_name }}
+  SecretNames: secret1,secret2
 
 stages:
   - stage:
@@ -49,7 +50,9 @@ stages:
     pool:
       vmImage: {{ env["azdo_pool_name"] }}
     {%- endif %}
-    {%- if env["azdo_depends_on"] %}
+    {%- if env["azdo_depends_on"] == "NoDependency" %}
+    dependsOn: ""
+    {%- elif env["azdo_depends_on"] %}
     dependsOn: {{ env["azdo_depends_on"] }}
     {%- endif %}
     variables:
@@ -71,7 +74,7 @@ stages:
                   inputs:
                     azureSubscription: {{ env["az_key_vault_service_connection"] }}
                     KeyVaultName: {{ env["az_key_vault_name"] }}
-                    SecretsFilter: 'secret1'
+                    SecretsFilter: $(SecretNames)
                     RunAsPreJob: false
                 {%- endif %}
                 {%- if env["k8s_type"] == "aks" %}
