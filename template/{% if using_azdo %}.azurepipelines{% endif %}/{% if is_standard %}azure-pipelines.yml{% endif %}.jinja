@@ -29,10 +29,10 @@ stages:
   - stage:
     pool:
       vmImage: ubuntu-latest
-    displayName: Set up Environment
+    displayName: Set Build Number
     jobs:
       - job: set_up_env
-        displayName: Set up Environment
+        displayName: Set Build Number
         steps:
           - pwsh: |
               $Date = Get-Date -Format "yyyyMMddHHmm"
