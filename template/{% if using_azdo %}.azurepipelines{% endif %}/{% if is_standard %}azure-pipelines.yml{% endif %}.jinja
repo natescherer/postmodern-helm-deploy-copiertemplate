@@ -3,7 +3,7 @@ name: $(BuildId)
 trigger:
   branches:
     exclude:
-    - "*"
+      - "*"
 
 parameters:
   - name: HelmChartVersion
@@ -26,7 +26,7 @@ variables:
   SecretNames: secret1,secret2
 
 stages:
-  - stage:
+  - stage: set_build_number
     pool:
       vmImage: ubuntu-latest
     displayName: Set Build Number
