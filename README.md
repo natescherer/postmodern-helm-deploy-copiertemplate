@@ -1,8 +1,9 @@
 # Postmodern Helm Deployment Copier Template
 
 [![All Contributors](https://img.shields.io/github/all-contributors/natescherer/postmodern-helm-deploy-copiertemplate?color=ee8449&style=flat-square)](#contributors)
-| :exclamation:  Notice: This project is currently in a Pre-Alpha state and is not ready for public use.  |
-|-----------------------------------------|
+
+| :exclamation: Notice: This project is currently in a Pre-Alpha state and is not ready for public use. |
+| ----------------------------------------------------------------------------------------------------- |
 
 A Copier template for deploying Helm charts with full CI/CD.
 
@@ -13,10 +14,10 @@ A Copier template for deploying Helm charts with full CI/CD.
 #### Support for Multiple CI/CD Platforms
 
 - GitHub **Recommended**
-   - Creating repos under both users and orgs is supported
-   - See [GitHub Org Limitations](docs/github_org_limitations.md) for details about template features excluded for Orgs
+  - Creating repos under both users and orgs is supported
+  - See [GitHub Org Limitations](docs/github_org_limitations.md) for details about template features excluded for Orgs
 - Azure DevOps
-   - See [Azure DevOps Limitations](docs/azure_devops_limitations.md) for details about features missing for AzDO
+  - See [Azure DevOps Limitations](docs/azure_devops_limitations.md) for details about features missing for AzDO
 
 #### Support for Public (Open-Source) and Private (Closed-Source) Repositories
 
@@ -132,7 +133,6 @@ This repository is based on the [Postmodern Repo Copier Template](https://github
 [all-contributors-app]: https://github.com/apps/allcontributors/installations/new
 [copier]: https://github.com/copier-org/copier
 [contributor-covenant]: https://www.contributor-covenant.org/
-[cruft]: https://cruft.github.io/cruft/
 [dependabot]: https://docs.github.com/en/code-security/getting-started/dependabot-quickstart-guide
 [devcontainer]: https://containers.dev/
 [gitversion]: https://gitversion.net/
@@ -141,4 +141,3 @@ This repository is based on the [Postmodern Repo Copier Template](https://github
 [mit-license]: https://choosealicense.com/licenses/mit/
 [prettier]: https://prettier.io/
 [semver]: https://semver.org/
-[trunk-github-setup]: https://docs.trunk.io/check/check-cloud-ci-integration/get-started
