@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.2.8](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/compare/v0.2.7...v0.2.8) (2024-09-25)
+
+
+### Features
+
+* Apply missing v0.2.24 files ([4fa17d5](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/commit/4fa17d5c1fcaa9a6381d8cb820bf2f75c8021321))
+* Apply parent template v0.2.24 ([5bfb8ce](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/commit/5bfb8ce11d97e369416884843b84334bd947e98a))
+* Switch deployment envs to block mapping ([4fb0cf2](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/commit/4fb0cf22fe77ccf400dd53e3c8929b3ace240c23))
+
 ## [0.2.7](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/compare/v0.2.6...v0.2.7) (2024-09-25)
 
 
