@@ -17,14 +17,14 @@ _jinja_extensions:
 
 _subdirectory: template
 
-## The below variables automatically track the parent of this template and do not need manually adjusted
+## The below variables are used to track parent/child template relationships and should not be manually adjusted.
 parent_template_name:
   type: str
   default: {{ project_name }}
   when: false
 parent_template_url:
   type: str
-  default: {% if using_github %}{% if github_org %}"https://github.com/{{ github_org }}/{{ repo_name }}"{% else %}"https://github.com/{{ github_username }}/{{ repo_name }}"{% endif %}{% endif %}{% if using_azdo %}"https://dev.azure.com/{{ azdo_org }}/{{ azdo_project | replace(" ","%20") }}/_git/{{ repo_name }}"{% endif %}
+  default: {% if using_github %}{% if github_org %}https://github.com/{{ github_org }}/{{ repo_name }}{% else %}https://github.com/{{ github_username }}/{{ repo_name }}{% endif %}{% endif %}{% if using_azdo %}https://dev.azure.com/{{ azdo_org }}/{{ azdo_project | replace(" ","%20") }}/_git/{{ repo_name }}{% endif %}
   when: false
 
 {%- raw %}
@@ -267,39 +267,25 @@ helm_repo_url:
 ## Tasks
 
 _tasks:
-  - >-
-    {%- if is_template -%}
-    invoke copy-template-files --answers-json '{{ _copier_answers | to_json }}'
-    {%- endif -%}
-  - >-
-    {%- if should_create_repo and using_github -%}
-    invoke create-repo-github --answers-json '{{ _copier_answers | to_json }}'
-    {%- endif -%}
-  - >-
-    {%- if should_create_repo and using_azdo -%}
-    invoke create-repo-azdo --answers-json '{{ _copier_answers | to_json }}'
-    {%- endif -%}
-  - >-
-    {%- if should_set_repo_settings and using_github -%}
-    invoke set-repo-settings-github --answers-json '{{ _copier_answers | to_json }}'
-    {%- endif -%}
-  - >-
-    {%- if should_create_repo -%}
-    invoke initialize-repo-and-commit-files --answers-json '{{ _copier_answers | to_json }}'
-    {%- endif -%}
-  - >-
-    {%- if should_set_repo_settings and using_github -%}
-    invoke set-branch-protection-ruleset-github --answers-json '{{ _copier_answers | to_json }}'
-    {%- endif -%}
-  - >-
-    {%- if should_set_repo_settings and using_azdo -%}
-    invoke create-pipelines-azdo --answers-json '{{ _copier_answers | to_json }}'
-    {%- endif -%}
+  - command: invoke copy-template-files --answers-json '{{ _copier_answers | to_json }}'
+    when: "{% if is_template %}true{% endif %}"
+  - command: invoke create-repo-github --answers-json '{{ _copier_answers | to_json }}'
+    when: "{% if should_create_repo and using_github %}true{% endif %}"
+  - command: invoke create-repo-azdo --answers-json '{{ _copier_answers | to_json }}'
+    when: "{% if should_create_repo and using_azdo %}true{% endif %}"
+  - command: invoke set-repo-settings-github --answers-json '{{ _copier_answers | to_json }}'
+    when: "{% if should_set_repo_settings and using_github %}true{% endif %}"
+  - command: invoke initialize-repo-and-commit-files --answers-json '{{ _copier_answers | to_json }}'
+    when: "{% if should_create_repo %}true{% endif %}"
+  - command: invoke set-branch-protection-ruleset-github --answers-json '{{ _copier_answers | to_json }}'
+    when: "{% if should_set_repo_settings and using_github %}true{% endif %}"
+  - command: invoke create-pipelines-azdo --answers-json '{{ _copier_answers | to_json }}'
+    when: "{% if should_set_repo_settings and using_azdo %}true{% endif %}"
   - invoke delete-unneeded-template-files
 
 _message_after_update: >-
   {% if lifecycle == 'Stable' and developer_platform == 'GitHub' and current_release_please_version_is_pre_1 %}
-  It looks like you have switched this project's lifecycle to 'Stable' for the first time. If this is true, merge the folliwng commit to main to have Release Please bump the version number properly.
+  It looks like you have switched this project's lifecycle to 'Stable' for the first time. If this is true, merge the following commit to main to have Release Please bump the version number properly.
 
   git commit --allow-empty -m "chore: bump version to v1.0.0" -m "Release-As: 1.0.0"
   {% endif %}
