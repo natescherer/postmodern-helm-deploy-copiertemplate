@@ -1,13 +1,13 @@
 steps:
-- task: KubeloginInstaller@0
-  displayName: Install Kubelogin
-- task: AzureCLI@2
-  displayName: Authenticate to AKS
-  inputs:
-    azureSubscription: ${{ parameters.AKSServiceConnection }}
-    scriptType: pscore
-    scriptLocation: inlineScript
-    inlineScript: |
-      az aks get-credentials --resource-group $(AKSClusterResourceGroup) --name $(AKSCluster) --only-show-errors --overwrite-existing --format azure
-      kubelogin convert-kubeconfig -l azurecli
-    failOnStandardError: true
+  - task: KubeloginInstaller@0
+    displayName: Install Kubelogin
+  - task: AzureCLI@2
+    displayName: Authenticate to AKS
+    inputs:
+      azureSubscription: ${{ parameters.AKSServiceConnection }}
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+        az aks get-credentials --resource-group $(AKSClusterResourceGroup) --name $(AKSCluster) --only-show-errors --overwrite-existing --format azure
+        kubelogin convert-kubeconfig -l azurecli
+      failOnStandardError: true

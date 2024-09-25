@@ -1,84 +1,84 @@
 steps:
-- task: HelmInstaller@1
-  displayName: Install Helm
-  inputs: 
-    helmVersionToInstall: latest
-- task: KubectlInstaller@0
-  displayName: Install Kubectl
-  inputs:
-    kubectlVersion: latest
-{%- if container_registry_type == "Azure Container Registry" %}
-{%- if acr_login_method == "Admin Credentials via Service Connection" %}
-- task: AzureCLI@2
-  displayName: Authenticate to ACR
-  inputs:
-    azureSubscription: {{ acr_service_connection }}
-    scriptType: pscore
-    scriptLocation: inlineScript
-    inlineScript: |
-      $CredsJson = az acr credential show --name $(AcrName) --only-show-errors
-      $CredsObject = ConvertFrom-Json ($CredsJson -join "`n")
-      helm registry login $(AcrName).azurecr.io --username $CredsObject.username --password $CredsObject.passwords[0].value
-{%- elif acr_login_method == "Admin Credentials via Pipeline Variable" %}
-- pwsh: |
-    helm registry login $(AcrName).azurecr.io --username $(AcrName) --password $env:AcrPassword
-  displayName: Authenticate to ACR
-  env:
-    AcrPassword: $(AcrPasswordSecret)
-{%- endif %}
-{%- endif %}
-{%- if container_registry_type == "Public" %}
-- pwsh: |
-    helm repo add $(HelmRepoName) $(HelmRepoUrl)
-    helm repo update
-  displayName: Add & Update Helm Repo
-  failOnStderr: true
-{%- endif %}
-- task: AzureCLI@2
-  displayName: Helm Install/Upgrade
-  inputs:
-    azureSubscription: {% raw %}${{ parameters.AKSServiceConnection }}{% endraw %}
-    scriptType: pscore
-    scriptLocation: inlineScript
-    inlineScript: |
-      $CurrentDeployment = helm list --namespace $(K8sNamespace) --filter $(HelmReleaseName) --output json
+  - task: HelmInstaller@1
+    displayName: Install Helm
+    inputs:
+      helmVersionToInstall: latest
+  - task: KubectlInstaller@0
+    displayName: Install Kubectl
+    inputs:
+      kubectlVersion: latest
+  {%- if container_registry_type == "Azure Container Registry" %}
+  {%- if acr_login_method == "Admin Credentials via Service Connection" %}
+  - task: AzureCLI@2
+    displayName: Authenticate to ACR
+    inputs:
+      azureSubscription: {{ acr_service_connection }}
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+        $CredsJson = az acr credential show --name $(AcrName) --only-show-errors
+        $CredsObject = ConvertFrom-Json ($CredsJson -join "`n")
+        helm registry login $(AcrName).azurecr.io --username $CredsObject.username --password $CredsObject.passwords[0].value
+  {%- elif acr_login_method == "Admin Credentials via Pipeline Variable" %}
+  - pwsh: |
+      helm registry login $(AcrName).azurecr.io --username $(AcrName) --password $env:AcrPassword
+    displayName: Authenticate to ACR
+    env:
+      AcrPassword: $(AcrPasswordSecret)
+  {%- endif %}
+  {%- endif %}
+  {%- if container_registry_type == "Public" %}
+  - pwsh: |
+      helm repo add $(HelmRepoName) $(HelmRepoUrl)
+      helm repo update
+    displayName: Add & Update Helm Repo
+    failOnStderr: true
+  {%- endif %}
+  - task: AzureCLI@2
+    displayName: Helm Install/Upgrade
+    inputs:
+      azureSubscription: {% raw %}${{ parameters.AKSServiceConnection }}{% endraw %}
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+        $CurrentDeployment = helm list --namespace $(K8sNamespace) --filter $(HelmReleaseName) --output json
 
-      if ($CurrentDeployment -ne "[]") {
-        Write-Host "Helm deployment already exists; set arguments for an upgrade"
-        $HelmArguments = @(
-          "upgrade",
-          "$(HelmReleaseName)",
-          "$(HelmChartLocation)",
-          "--values values.yaml",
-          "--version {% raw %}${{ parameters.HelmChartVersion }}{% endraw %}"
-          "--namespace $(K8sNamespace)",
-          "--atomic",
-          "--cleanup-on-fail",
-          "--wait"
-        )
-      } else {
-        Write-Host "Helm deployment doesn't exist; set arguments for an install"
-        $HelmArguments = @(
-          "install",
-          "$(HelmReleaseName)",
-          "$(HelmChartLocation)",
-          "--version {% raw %}${{ parameters.HelmChartVersion }}{% endraw %}"
-          "--values values.yaml",
-          "--namespace $(K8sNamespace)",
-          "--wait"
-        )
-      }
+        if ($CurrentDeployment -ne "[]") {
+          Write-Host "Helm deployment already exists; set arguments for an upgrade"
+          $HelmArguments = @(
+            "upgrade",
+            "$(HelmReleaseName)",
+            "$(HelmChartLocation)",
+            "--values values.yaml",
+            "--version {% raw %}${{ parameters.HelmChartVersion }}{% endraw %}"
+            "--namespace $(K8sNamespace)",
+            "--atomic",
+            "--cleanup-on-fail",
+            "--wait"
+          )
+        } else {
+          Write-Host "Helm deployment doesn't exist; set arguments for an install"
+          $HelmArguments = @(
+            "install",
+            "$(HelmReleaseName)",
+            "$(HelmChartLocation)",
+            "--version {% raw %}${{ parameters.HelmChartVersion }}{% endraw %}"
+            "--values values.yaml",
+            "--namespace $(K8sNamespace)",
+            "--wait"
+          )
+        }
 
-      # Add --set arguments here, if needed
+        # Add --set arguments here, if needed
 
-      $ProcessReturn = Start-Process -FilePath "helm" -ArgumentList $HelmArguments -PassThru -Wait
-      if ($ProcessReturn.ExitCode -ne 0) {
-        throw "Helm failed!"
-      }
-{%- if container_registry_type == "Public" %}
-- pwsh: |
-    helm repo remove $(HelmRepoName)
-  displayName: Remove Helm Repo
-  failOnStderr: true
-  condition: always()
-{%- endif %}
+        $ProcessReturn = Start-Process -FilePath "helm" -ArgumentList $HelmArguments -PassThru -Wait
+        if ($ProcessReturn.ExitCode -ne 0) {
+          throw "Helm failed!"
+        }
+  {%- if container_registry_type == "Public" %}
+  - pwsh: |
+      helm repo remove $(HelmRepoName)
+    displayName: Remove Helm Repo
+    failOnStderr: true
+    condition: always()
+  {%- endif %}
