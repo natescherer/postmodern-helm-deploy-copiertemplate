@@ -30,7 +30,9 @@ lint:
     - linters: [ALL]
       paths:
         - .copier-answers.yml
+        {%- if is_template %}
         - CHANGELOG.md
+        {%- endif %}
         {%- if is_public %}
         - .all-contributorsrc
         - CODE_OF_CONDUCT.md
