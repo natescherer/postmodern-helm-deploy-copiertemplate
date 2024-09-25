@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.10](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/compare/v0.2.9...v0.2.10) (2024-09-25)
+
+
+### Bug Fixes
+
+* Fix azdo stage naming ([8a86dda](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/commit/8a86dda6c458330347cbf0024b41db1773ee84c3))
+
 ## [0.2.9](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/compare/v0.2.8...v0.2.9) (2024-09-25)
 
 
