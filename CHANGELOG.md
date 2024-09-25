@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.9](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/compare/v0.2.8...v0.2.9) (2024-09-25)
+
+
+### Bug Fixes
+
+* Adjust azdo deployment workflow ([2582548](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/commit/2582548d2bcce08b0107cbf4c52ea5f63758e8c0))
+
 ## [0.2.8](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/compare/v0.2.7...v0.2.8) (2024-09-25)
 
 
