@@ -24,18 +24,24 @@ ignoreRegExpList:
   - extension-recommendations
 words:
   # Author Name Components
-  - Nate
-  - Scherer
+  {%- for name_component in author_name.split(" ") %}
+  - {{ name_component }}
+  {%- endfor %}
   # Repo Name
-  - postmodern-helm-deploy-copiertemplate
+  - {{ repo_name }}
   # Project Name Components
-  - Postmodern
-  - Helm
-  - Deployment
-  - Copier
-  - Template
+  {%- for project_component in project_name.split(" ") %}
+  - {{ project_component }}
+  {%- endfor %}
+  {%- if using_github %}
   # GitHub Username
-  - natescherer
+  - {{ github_username }}
+  {%- endif %}
+  {%- if using_azdo %}
+  # Azure DevOps
+  - {{ azdo_org }}
+  - {{ azdo_project }}
+  {%- endif %}
   # Code Terms
   - pscore
   - pydoclint
