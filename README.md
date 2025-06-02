@@ -14,10 +14,10 @@ A Copier template for deploying Helm charts with full CI/CD.
 #### Support for Multiple CI/CD Platforms
 
 - GitHub **Recommended**
-  - Creating repos under both users and orgs is supported
-  - See [GitHub Org Limitations](docs/github_org_limitations.md) for details about template features excluded for Orgs
+    - Creating repos under both users and orgs is supported
+    - See [GitHub Org Limitations](docs/github_org_limitations.md) for details about template features excluded for Orgs
 - Azure DevOps
-  - See [Azure DevOps Limitations](docs/azure_devops_limitations.md) for details about features missing for AzDO
+    - See [Azure DevOps Limitations](docs/azure_devops_limitations.md) for details about features missing for AzDO
 
 #### Support for Public (Open-Source) and Private (Closed-Source) Repositories
 
@@ -41,18 +41,21 @@ It is highly encouraged for you to take this template and make your own child te
 - Setting of repo settings & branch protection rules
 - Creation of useful non-default issue labels: `awaiting pr` and `blocked`
 - Contributor management and crediting via [All Contributors](https://allcontributors.org/)
-- Dependency updates via [Dependabot](https://docs.github.com/en/code-security/getting-started/dependabot-quickstart-guide)
+- Dependency updates via [Renovate](https://github.com/marketplace/renovate/)
 - Scheduled checks for updates from parent template
 
 ### Code Management and Formatting
 
-- Automatic code linting and formatting via [Trunk](https://trunk.io):
-  - Dockerfile linting via [hadolint](https://github.com/hadolint/hadolint)
-  - GitHub Actions linting via [actionlint](https://github.com/rhysd/actionlint)
-  - Markdown linting via [markdownlint](https://github.com/DavidAnson/markdownlint) and formatting via [Prettier](https://prettier.io/)
-  - Python linting and formatting via [Ruff](https://github.com/astral-sh/ruff)
-  - Spell checking via [cSpell](https://cspell.org/)
-  - YAML linting iva [yamllint](https://github.com/adrienverge/yamllint) and formatting via [Prettier](https://prettier.io/)
+- Automatic, repository-local dev tool installation via [mise](https://github.com/jdx/mise)
+- Automatic code linting and formatting via [hk](https://github.com/jdx/hk):
+    - Commit message linting via [committed](https://github.com/crate-ci/committed)
+    - GitHub Actions linting via [actionlint](https://github.com/rhysd/actionlint)
+    - Markdown link health checking via [lychee](https://github.com/lycheeverse/lychee)
+    - Markdown linting via [mado](https://github.com/akiomik/mado)
+    - Python linting and formatting via [Ruff](https://github.com/astral-sh/ruff)
+    - Spell checking via [typos](https://github.com/crate-ci/typos)
+    - TOML linting and formatting via [Taplo](https://github.com/tamasfe/taplo)
+    - YAML linting via [yamllint](https://github.com/adrienverge/yamllint)
 
 ### CI/CD
 
@@ -69,7 +72,7 @@ It is highly encouraged for you to take this template and make your own child te
 
 ## Getting started
 
-Intersted in using this template (or just learning more about it)? Check out [Getting Started](docs/getting_started.md).
+Interested in using this template (or just learning more about it)? Check out [Getting Started](docs/getting_started.md).
 
 ## Questions/Comments
 

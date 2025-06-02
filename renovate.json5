@@ -1,0 +1,38 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "dependencyDashboard": false,
+  "extends": ["config:recommended"],
+  "azure-pipelines": {
+    "enabled": true,
+    "fileMatch": [
+      "(^|/)(?:{%.*%})?\\.azurepipelines(?:{%.*%})?/.+\\.ya?ml(?:{%.*%})?(?:\\.jinja)?$"
+    ]
+  },
+  "copier": {
+    // Copier template updates are handled via dedicated GitHub Actions Workflow/Azure DevOps pipeline
+    "enabled": false
+  },
+  "docker": {
+    "pinDigests": true
+  },
+  "devcontainer": {
+    "fileMatch": ["(^|/)devcontainer\\.json(?:\\.jinja)?$"]
+  },
+  "github-actions": {
+    "fileMatch": [
+      "(^|/)(?:{%.*%})?\\.github(?:{%.*%})?/workflows/.+\\.ya?ml(?:{%.*%})?$"
+    ]
+  },
+  "packageRules": [
+    {
+      "description": "Don't pin digests in devcontainer.json because it's not supported in features",
+      "matchManagers": ["devcontainer"],
+      "pinDigests": false
+    },
+    {
+      "description": "Use standard major version numbers for Azure Pipelines",
+      "matchDatasources": ["azure-pipelines-tasks"],
+      "extractVersion": "^(?<version>\\d+)"
+    }
+  ]
+}

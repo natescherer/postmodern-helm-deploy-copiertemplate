@@ -7,6 +7,7 @@ import json
 import os
 import shutil
 import tempfile
+from pathlib import Path
 
 import copier.vcs
 import githubkit
@@ -27,11 +28,13 @@ def copy_template_files(c, answers_json):
     with tempfile.TemporaryDirectory() as tmpdir:
         if ref != "HEAD" and ref is not None:
             c.run(
-                f"cd {tmpdir}; git -c advice.detachedHead=false clone -q --depth 1 --branch {ref} {source_url} ."
+                f"cd {tmpdir}; git -c advice.detachedHead=false clone -q "
+                f"--depth 1 --branch {ref} {source_url} ."
             )
         else:
             c.run(
-                f"cd {tmpdir}; git -c advice.detachedHead=false clone -q --depth 1 {source_url} ."
+                f"cd {tmpdir}; git -c advice.detachedHead=false clone -q "
+                f"--depth 1 {source_url} ."
             )
         shutil.copytree(f"{tmpdir}/template", "template", dirs_exist_ok=True)
     print("[bold green]*** 'copy-template-files' task end ***[/bold green]")
@@ -147,7 +150,9 @@ def set_repo_settings_github(c, answers_json):
 def set_branch_protection_ruleset_github(c, answers_json):
     """Set branch protection ruleset on a GitHub repo."""
     print(
-        "[bold green]*** 'set-branch-protection-ruleset-github' task start ***[/bold green]"
+        "[bold green]"
+        "*** 'set-branch-protection-ruleset-github' task start ***"
+        "[/bold green]"
     )
     answers = json.loads(answers_json)
     with open("token.json") as token_file:
@@ -188,10 +193,14 @@ def set_branch_protection_ruleset_github(c, answers_json):
         )
     else:
         print(
-            "[yellow]Repo ruleset 'default-branch-protection' already exists, skipping creation. Please verify this ruleset was made by this template or GitHub Actions workflows might not work correctly![/yellow]"
+            "[yellow]Repo ruleset 'default-branch-protection' already exists, "
+            "skipping creation. Please verify this ruleset was made by this "
+            "template or GitHub Actions workflows might not work correctly![/yellow]"
         )
     print(
-        "[bold green]*** 'set-branch-protection-ruleset-github' task end ***[/bold green]"
+        "[bold green]"
+        "*** 'set-branch-protection-ruleset-github' task end ***"
+        "[/bold green]"
     )
 
 
@@ -202,6 +211,8 @@ def initialize_repo_and_commit_files(c, answers_json):
         "[bold green]*** 'initialize-repo-and-commit-files' task start ***[/bold green]"
     )
     answers = json.loads(answers_json)
+    with open("token.json") as token_file:
+        token = json.loads(token_file.read())["token"]
     owner = answers.get("github_org") or answers.get("github_username")
     if answers["lifecycle"] in ["Pre-Alpha", "Alpha", "Beta"]:
         first_version = "0.1.0"
@@ -217,17 +228,50 @@ def initialize_repo_and_commit_files(c, answers_json):
     if answers["developer_platform"] == "GitHub":
         commit_message += f" -m 'Release-As: {first_version}'"
     c.run(commit_message)
+    print("[cyan]Adding remote...[/cyan]")
     if answers["developer_platform"] == "GitHub":
         remote_url = f"https://github.com/{owner}/{answers['repo_name']}.git"
+        gcm_dir = f"{str(Path.home())}/.gcm/store/git/https/github.com"
+        gcm_file = f"{answers['github_username']}.credential"
+        gcm_service = "https://github.com"
+        gcm_account = answers["github_username"]
     elif answers["developer_platform"] == "Azure DevOps":
         encoded_project = answers["azdo_project"].replace(" ", "%20")
         remote_url = f"https://{answers['azdo_org']}@dev.azure.com/{answers['azdo_org']}/{encoded_project}/_git/{answers['repo_name']}"
-        print("[cyan]Setting 'git config credential.useHttpPath true'...[/cyan]")
+        gcm_dir = (f"{str(Path.home())}/.gcm/store/git/https/dev.azure.com/"
+                   f"{answers['azdo_org']}")
+        gcm_file = "copier.credential"
+        gcm_service = f"https://dev.azure.com/{answers['azdo_org']}"
+        gcm_account = "copier"
+        print("[cyan]Temporarily setting git config options for AzDO...[/cyan]")
         c.run("git config credential.useHttpPath true")
-    print(f"[cyan]Adding remote {remote_url}...[/cyan]")
     c.run(f"git remote add origin {remote_url}")
+    print("[cyan]Setting up Git credentials...[/cyan]")
+    print(
+        "[cyan]"
+        "Temporarily enabling plaintext git credentials for first push..."
+        "[/cyan]"
+    )
+    c.run("git config credential.credentialStore plaintext")
+    print(
+        "[cyan]"
+        "Creating credentials file that will be cleaned up after push..."
+        "[/cyan]"
+    )
+    Path(gcm_dir).mkdir(parents=True, exist_ok=True)
+    with open(f"{gcm_dir}/{gcm_file}", "w+") as cred_file:
+        cred_file.writelines(
+            [f"{token}\n", f"service={gcm_service}\n", f"account={gcm_account}"]
+        )
     print("[cyan]Pushing to remote...[/cyan]")
     c.run("git push -u origin --all")
+    if answers["developer_platform"] == "Azure DevOps":
+        print("[cyan]Unsetting git config options for AzDO...[/cyan]")
+        c.run("git config --unset credential.useHttpPath")
+    print("[cyan]Disabling plaintext git credentials...[/cyan]")
+    c.run("git config --unset credential.credentialStore")
+    print("[cyan]Deleting credentials file...[/cyan]")
+    os.remove(f"{gcm_dir}/{gcm_file}")
     print(
         "[bold green]*** 'initialize-repo-and-commit-files' task end ***[/bold green]"
     )
@@ -235,38 +279,49 @@ def initialize_repo_and_commit_files(c, answers_json):
 
 @task
 def create_pipelines_azdo(c, answers_json):
-    """Register pipeline for an Azure DevOps repo."""
+    """Register pipelines for an Azure DevOps repo."""
     print("[bold green]*** 'create-pipelines-azdo' task start ***[/bold green]")
     answers = json.loads(answers_json)
     with open("token.json") as token_file:
         token = json.loads(token_file.read())["token"]
 
-    pipeline_data = {
-        "name": answers["repo_name"],
-        "repository": {"name": answers["repo_name"], "type": "TfsGit"},
-        "process": {"yamlFilename": ".azurepipelines/azure-pipelines.yml", "type": 2},
-        "path": "\\",
-        "queue": {"name": "Azure Pipelines"},
-        "triggers": [{"settingsSourceType": 2, "triggerType": "continuousIntegration"}],
-        "type": "build",
-    }
-    headers = {"Content-Type": "application/json", "Accept": "application/json"}
-    encoded_project = answers["azdo_project"].replace(" ", "%20")
-    print("[cyan]Creating pipeline in Azure DevOps...[/cyan]")
-    response = requests.post(
-        f"https://dev.azure.com/{answers['azdo_org']}/{encoded_project}/_apis/build/definitions?api-version=7.1-preview.7",
-        data=json.dumps(pipeline_data),
-        auth=("", token),
-        headers=headers,
-        timeout=10,
-    )
-    response.raise_for_status()
+    for entry in os.scandir(".azurepipelines"):
+        if entry.name.endswith(".yml"):
+            pipeline_data = {
+                "name": f"{answers['repo_name']} {Path(entry.name).with_suffix('')}",
+                "repository": {
+                    "name": answers["repo_name"],
+                    "type": "TfsGit",
+                },
+                "process": {"yamlFilename": f".azurepipelines/{entry.name}", "type": 2},
+                "path": "\\",
+                "queue": {"name": "Azure Pipelines"},
+                "triggers": [
+                    {"settingsSourceType": 2, "triggerType": "continuousIntegration"}
+                ],
+                "type": "build",
+            }
+            headers = {"Content-Type": "application/json", "Accept": "application/json"}
+            encoded_project = answers["azdo_project"].replace(" ", "%20")
+            print(
+                f"[cyan]"
+                f"Creating pipeline for '.azurepipelines/{entry.name}' in "
+                "Azure DevOps...[/cyan]"
+            )
+            response = requests.post(
+                f"https://dev.azure.com/{answers['azdo_org']}/{encoded_project}/_apis/build/definitions?api-version=7.1-preview.7",
+                data=json.dumps(pipeline_data),
+                auth=("", token),
+                headers=headers,
+                timeout=10,
+            )
+            response.raise_for_status()
     print("[bold green]*** 'create-pipelines-azdo' task end ***[/bold green]")
 
 
 @task
 def delete_unneeded_template_files(c):
-    """Delete files used only in the template build process, including this tasks.py file."""
+    """Delete files used only in the template process, including this tasks.py file."""
     print(
         "[bold green]*** 'delete-unneeded-template-files' task start ***[/bold green]"
     )
