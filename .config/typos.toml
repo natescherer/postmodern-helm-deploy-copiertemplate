@@ -1,0 +1,14 @@
+[default.extend-words]
+# Author Name Components
+Nate = "Nate"
+Scherer = "Scherer"
+# Repo Name
+postmodern-helm-deploy-copiertemplate = "postmodern-helm-deploy-copiertemplate"
+# Project Name Components
+Postmodern = "Postmodern"
+Helm = "Helm"
+Deployment = "Deployment"
+Copier = "Copier"
+Template = "Template"
+# GitHub Username
+natescherer = "natescherer"
