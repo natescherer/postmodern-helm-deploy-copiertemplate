@@ -1,7 +1,7 @@
 # {{ project_name }}
 {%- if is_public %}
 
-[![All Contributors](https://img.shields.io/github/all-contributors/{{ github_username }}/{{ repo_name }}?color=ee8449&style=flat-square)](#contributors)
+[![All Contributors](https://img.shields.io/github/all-contributors/{{ github_repo_owner }}/{{ repo_name }}?color=ee8449&style=flat-square)](#contributors)
 {%- endif -%}
 {%- if is_prerelease %}
 
@@ -15,37 +15,17 @@
 |------------------------------------------------------------------ |
 {%- endif %}
 
-{{ project_short_description }}
-
-## Features
-
-- Feature 1
-- Feature 2
-- Feature 3
-
-## Installing
-
-### Prerequisites
-
-No prerequisites are required.
-
-### Main Installation
-
-FILL ME IN
-
-## Usage
-
-### Examples
-
-EXAMPLES HERE
+Describe your project here.
 
 ### Documentation
 
-For detailed documentation, [click here](docs).
+{%- if mkdocs_ghpages %}
+For detailed documentation, see [https://{{github_repo_owner}}.github.io/{{repo_name}}](https://{{github_repo_owner}}.github.io/{{repo_name}}).
+{%- endif %}
+{%- if mkdocs_repo %}
+For detailed documentation, clone this repo and open `docs_site/index.html`.
+{%- endif %}
 
-## Building
-
-BUILD INFO HERE
 {%- if is_public %}
 
 ## Questions/Comments

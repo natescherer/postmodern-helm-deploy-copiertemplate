@@ -6,7 +6,10 @@ trigger:
       - "*"
 
 variables:
+  CI: true
   MINIMUM_VERSION: {% if is_prerelease %}0.1.0{% else %}1.0.0{% endif %}
+  MISE_ENV: ci
+  VERSION_FILE_PATH: .config/version.txt
 
 pool:
   vmImage: ubuntu-latest
@@ -24,34 +27,32 @@ stages:
           - pwsh: |
               git config user.email "azuredevops@microsoft.com"
               git config user.name "Azure DevOps"
-            failOnStderr: false # Git writes to stderr normally
             displayName: Set Git Config
-          - task: UseNode@1
-            inputs:
-              version: ">=22.x"
-            displayName: Install Node
+          - bash: |
+              curl https://mise.run | sh
+              echo "##vso[task.prependpath]$(HOME)/.local/share/mise/bin"
+              echo "##vso[task.prependpath]$(HOME)/.local/share/mise/shims"
+            displayName: Install Mise
+          - bash: mise install
+            displayName: Run 'mise install'
           - pwsh: |
-              $env:NODE_NO_WARNINGS = 1 # This can be removed once https://github.com/npm/cli/issues/7857 is resolved
-
-              $VersionFile = ".version.txt"
-              if (Test-Path -Path $VersionFile) {
-                $CurrentVersion = Get-Content -Path $VersionFile
+              if (Test-Path -Path $(VERSION_FILE_PATH)) {
+                $CurrentVersion = Get-Content -Path $(VERSION_FILE_PATH)
               } else {
                 Write-Host "This appears to be the first release."
-                "$(MINIMUM_VERSION)" | Out-File -FilePath $VersionFile
+                "$(MINIMUM_VERSION)" | Out-File -FilePath $(VERSION_FILE_PATH)
                 $CurrentVersion = "0.0.0"
               }
 
               if ([System.Version]$CurrentVersion -lt [System.Version]"$(MINIMUM_VERSION)") {
                 Write-Host "Releasing in --release-as mode."
-                npx --yes commit-and-tag-version --release-as $(MINIMUM_VERSION)
+                mise x -- commit-and-tag-version --release-as $(MINIMUM_VERSION)
               } else {
-                npx --yes commit-and-tag-version
+                mise x -- commit-and-tag-version
               }
 
-              $ReleaseVersion = Get-Content -Path $VersionFile
+              $ReleaseVersion = Get-Content -Path $(VERSION_FILE_PATH)
               Write-Host "##vso[task.setvariable variable=RELEASE_VERSION;]$ReleaseVersion"
-            failOnStderr: true
             displayName: Run 'commit-and-tag-version'
           - pwsh: |
               $BranchName = "release-v$(RELEASE_VERSION)"
@@ -60,7 +61,6 @@ stages:
               git checkout -b $BranchName
               git push --set-upstream origin $BranchName
               git push origin --tags
-            failOnStderr: false # Git writes to stderr normally
             displayName: Push New Branch
           - pwsh: |
               $PRTitle = "chore: release v$(RELEASE_VERSION)"
@@ -94,7 +94,6 @@ stages:
               $LastMergeSourceCommitID = $CreateResponse.lastMergeSourceCommit.commitId
               Write-Host "Last Merge Source Commit ID is '$LastMergeSourceCommitID'"
               Write-Host "##vso[task.setvariable variable=LAST_MERGE_SOURCE_COMMIT_ID;]$LastMergeSourceCommitID"
-            failOnStderr: true
             displayName: Create Pull Request
             env:
               SYSTEM_ACCESSTOKEN: $(System.AccessToken)
@@ -153,7 +152,6 @@ stages:
               }
               Write-Host "Merging Pull Request..."
               Invoke-RestMethod @MergeSplat | Out-Null
-            failOnStderr: true
             displayName: Approve & Merge Pull Request
             env:
               SYSTEM_ACCESSTOKEN: $(System.AccessToken)

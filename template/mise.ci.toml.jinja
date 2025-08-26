@@ -1,0 +1,21 @@
+[tools]
+{%- if using_azdo %}
+# Backends
+{#- renovate: datasource=node-version depName=node versioning=node #}
+node = "22.18.0" # Used by commit-and-tag-version
+{%- endif %}
+# Tools
+{#- renovate: datasource=pypi depName=apprise versioning=pep440 #}
+"pipx:apprise" = "1.9.4"
+{%- if using_azdo %}
+{#- renovate: datasource=npm depName=commit-and-tag-version #}
+"npm:commit-and-tag-version" = "12.5.2"
+{%- endif %}
+{#- renovate: datasource=github-releases depName=mikefarah/yq #}
+yq = "4.47.1" # Used by copier update check CI workflows
+
+{%- if mkdocs_ghpages %}
+[tools."pipx:mike"]
+version = "2.1.3"
+uvx_args = "--with mkdocs-material[imaging]==9.6.15 --with mkdocs-static-i18n==1.3.0"
+{%- endif %}
