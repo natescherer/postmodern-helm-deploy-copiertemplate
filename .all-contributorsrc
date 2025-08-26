@@ -1,5 +1,8 @@
 {
   "projectName": "postmodern-helm-deploy-copiertemplate",
+  "projectOwner": "natescherer"
+}
+
   "projectOwner": "natescherer",
   "files": [
     "README.md"

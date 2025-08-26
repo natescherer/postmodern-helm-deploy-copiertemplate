@@ -1,0 +1,63 @@
+name: $(BuildId)
+
+trigger:
+  branches:
+    exclude:
+      - "*"
+
+schedules:
+  - cron: 0 2 * * 1
+    displayName: Run 'copier update' Every Monday at 2am
+    branches:
+      include:
+        - main
+
+variables:
+  CI: true
+  MISE_ENV: ci
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+  - stage: checkfortemplateupdate
+    displayName: Check for Template Update
+    jobs:
+      - job: checkfortemplateupdate
+        displayName: Check for Template Update
+        steps:
+          - pwsh: |
+              $Secrets = @("APPRISE_URI")
+              $MissingSecret = $False
+              foreach ($Secret in $Secrets) {
+                if (!([Environment]::GetEnvironmentVariable($Secret)) -or ([Environment]::GetEnvironmentVariable($Secret) -eq "`$($Secret)")) {
+                  Write-Host -Object "[error]Required Actions secret '$Secret' is not set! Please add it in Pipelines settings."
+                  $MissingSecret = $True
+                }
+              }
+              if ($MissingSecret) {
+                throw "Erroring as one or more required secrets are missing!"
+              }
+            env:
+              APPRISE_URI: $(APPRISE_URI)
+            displayName: Validate Secrets Exist
+          - checkout: self
+            fetchDepth: 0
+            persistCredentials: true
+          - bash: |
+              curl https://mise.run | sh
+              echo "##vso[task.prependpath]$(HOME)/.local/share/mise/bin"
+              echo "##vso[task.prependpath]$(HOME)/.local/share/mise/shims"
+            displayName: Install Mise
+          - bash: mise install
+            displayName: Run 'mise install'
+          - pwsh: |
+              $CurrentVersion = $(yq '._commit' .config/copier-answers.yml).TrimStart("v")
+              $Output = copier update --answers-file .config/copier-answers.yml --skip-answered --pretend --trust 2>&1
+              $NewVersion = $Output[0].ToString().Split(" ")[-1]
+              if ([System.Version]$CurrentVersion -lt [System.Version]$NewVersion) {
+                apprise -i html -t "[$env:BUILD_REPOSITORY_NAME] Template Update Available" -b "Current Version: <i>$CurrentVersion</i> New Version: <i>$NewVersion</i><br><br>Run <b>mise run copier-update</b> to update." $env:APPRISE_URI
+              }
+            env:
+              APPRISE_URI: $(APPRISE_URI)
+            displayName: Check for Template Updates

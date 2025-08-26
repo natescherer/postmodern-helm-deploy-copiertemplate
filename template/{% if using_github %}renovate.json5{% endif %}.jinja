@@ -1,7 +1,14 @@
 {
+  // Core config
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "dependencyDashboard": false,
-  "extends": ["config:recommended"],
+  "extends": [
+    "config:recommended"
+  ],
+  "schedule": [
+    "* * 1 * *"
+  ],
+  // Per-provider config
   {%- if is_template or (is_standard and using_azdo) %}
   "azure-pipelines": {
     "enabled": true,
@@ -23,7 +30,9 @@
   },
   {%- if is_template %}
   "devcontainer": {
-    "fileMatch": ["(^|/)devcontainer\\.json(?:\\.jinja)?$"]
+    "fileMatch": [
+      "(^|/)devcontainer\\.json(?:\\.jinja)?$"
+    ]
   },
   "github-actions": {
     "fileMatch": [
@@ -31,17 +40,60 @@
     ]
   },
   {%- endif %}
+  // Package rules
   "packageRules": [
     {
       "description": "Don't pin digests in devcontainer.json because it's not supported in features",
-      "matchManagers": ["devcontainer"],
+      "matchManagers": [
+        "devcontainer"
+      ],
       "pinDigests": false
     }{% if is_template or (is_standard and using_azdo) %},
     {
       "description": "Use standard major version numbers for Azure Pipelines",
-      "matchDatasources": ["azure-pipelines-tasks"],
+      "matchDatasources": [
+        "azure-pipelines-tasks"
+      ],
       "extractVersion": "^(?<version>\\d+)"
     }
     {%- endif %}
+  ],
+  // Custom Managers
+  "customManagers": [
+    {
+      // Manager for simple mise tools
+      "customType": "regex",
+      "fileMatch": [
+        "mise\\..*toml\\.jinja"
+      ],
+      "matchStrings": [
+        {% raw %}"{#[-]? renovate: datasource=(?<datasource>[a-z-.]+?) depName=(?<depName>[^\\s]+?)(?: (lookupName|packageName)=(?<packageName>[^\\s]+?))?(?: versioning=(?<versioning>[^\\s]+?))?(?: extractVersion=(?<extractVersion>[^\\s]+?))?(?: registryUrl=(?<registryUrl>[^\\s]+?))?\\s*#}\\s+[A-Za-z0-9_\\-\"':]+\\s?=\\s?[\"'](?<currentValue>[^\"']*)[\"'].*"{% endraw %}
+      ],
+      "versioningTemplate": {% raw %}"{{#if versioning}}{{{versioning}}}{{else}}semver-coerced{{/if}}"{% endraw %}
+    },
+    {
+      // Manager for pipx tools with options
+      "customType": "regex",
+      "datasourceTemplate": "pypi",
+      "fileMatch": [
+        "mise\\..*toml\\.jinja"
+      ],
+      "matchStrings": [
+        "\\[tools\\.\"?pipx:(?<depName>[^\"\\]]+)\"?\\]\\sversion = \"(?<currentValue>[^\\s]*)\""
+      ],
+      "versioningTemplate": "pep440"
+    },
+    {
+      // Manager for pipx tool dependencies
+      "customType": "regex",
+      "datasourceTemplate": "pypi",
+      "fileMatch": [
+        "mise\\..*toml\\.jinja"
+      ],
+      "matchStrings": [
+        ".*?(--with\\s(?<depName>[^=]+?)==(?<currentValue>[^\"\\s]*))"
+      ],
+      "versioningTemplate": "pep440"
+    }
   ]
 }

@@ -1,0 +1,2 @@
+MD013: false # Ignore line length warnings
+MD046: false # Ignore code block styling for mkdocs-material
