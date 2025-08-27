@@ -6,6 +6,7 @@ _jinja_extensions:
   - copier_template_extensions.TemplateExtensionLoader
   - jinja2_shell_extension.ShellExtension
   # Internal Dependencies
+  - extensions/slugify_extension.py:SlugifyExtension
   - extensions/yaml_quote_extension.py:YamlQuoteExtension
 
 _message_before_copy: Thanks for using this template! Please consult the 'Template Questions' page in documentation for deeper explanation of each question.
@@ -101,7 +102,8 @@ azdo_project:
 project_type:
   type: str
   help: |
-    If you are creating a basic repo, choose Standard. If you are creating a child template, choose Template.
+    If you are creating a repo that will deploy a Helmfile, choose Standard.
+    If you are creating a child template, choose Template.
     DO NOT CHANGE ON UPDATE!
   choices:
     - Standard
@@ -272,16 +274,6 @@ copyright_year:
   default: "{{ copyright_year | default('%Y' | strftime) }}"
   when: false
 
-helm_repo_name:
-  type: str
-  default: "{% if container_registry_type == 'Public' %}{{ public_helm_repo_url.split('//') | last | slugify }}{% elif container_registry_type == 'Azure Container Registry' %}{{ acr_name + '.azurecr.io' | slugify }}{% endif %}"
-  when: false
-
-helm_repo_url:
-  type: str
-  default: "{% if container_registry_type == 'Public' %}{{ public_helm_repo_url }}{% endif %}"
-  when: false
-
 ## Tasks
 
 _tasks:
@@ -310,6 +302,3 @@ _message_after_update: |-
 {%- endraw %}
 ---
 !include copier-deployment-envs.yml
-
----
-!include copier-question-overrides.yml

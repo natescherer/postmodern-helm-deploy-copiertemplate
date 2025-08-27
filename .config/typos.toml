@@ -11,4 +11,6 @@ Scherer = "Scherer"
 natescherer = "natescherer"
 # Repo Name
 postmodern-helm-deploy-copiertemplate = "postmodern-helm-deploy-copiertemplate"
+# Acronym for Azure Kubernetes Service
+aks = "aks"
 # Custom Words Below

@@ -1,0 +1,49 @@
+name: $(BuildId)
+
+trigger:
+  branches:
+    exclude:
+      - "*"
+
+variables:
+  CI: true
+  MISE_ENV: ci
+
+stages:
+{%- for env in k8s_envs %}
+{% set base_name = env["k8s_cluster"] + "_" + env["k8s_ns"] %}
+  - stage: {{ env["job_name"] | slugify | replace("-","_") }}
+    {%- if env["azdo_pool_type"] == "private" %}
+    pool: {{ env["azdo_pool_name"] }}
+    {%- else %}
+    pool:
+      vmImage: {{ env["azdo_pool_name"] }}
+    {%- endif %}
+    {%- if env["depends_on_job"] == "NoDependency" %}
+    dependsOn: ""
+    {%- elif env["depends_on_job"] %}
+    dependsOn: {{ env["depends_on_job"] }}
+    {%- endif %}
+    variables:
+      {%- if env["k8s_type"] == "aks" %}
+      AKSCluster: {{ env["k8s_cluster"] }}
+      AKSClusterResourceGroup: {{ env["aks_resource_group"] }}
+      {%- endif %}
+      HelmfileEnvironment: {{ env["k8s_cluster"] + "[" + env["k8s_ns"] + "]" }}
+    jobs:
+      - deployment: {{ base_name | slugify | replace("-","_") }}
+        {%- if env["deployment_env"] %}
+        environment: {{ env["deployment_env"] }}
+        {%- endif %}
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                {%- if env["k8s_type"] == "aks" %}
+                - template: template-aks-login.yml
+                  parameters:
+                    ServiceConnection: {{ env["azdo_service_connection"] }}
+                - template: template-helmfile-sync.yml
+                  parameters:
+                    ServiceConnection: {{ env["azdo_service_connection"] }}
+{%- endfor %}
