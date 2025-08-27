@@ -10,6 +10,7 @@ A Copier template to create a Helm (and Helmfile) deployment with the Hard/Borin
 
 ## Documentation
 
+# Documentation
 For detailed documentation, see [https://natescherer.github.io/postmodern-helm-deploy-copiertemplate](https://natescherer.github.io/postmodern-helm-deploy-copiertemplate).
 
 ## Questions/Comments
