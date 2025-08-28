@@ -12,6 +12,7 @@ variables:
 stages:
   {%- for env in k8s_envs %}
   - stage: {{ env["name"] | slugify | replace("-","_") }}
+    displayName: {{ env["name"] }}
     {%- if env["azdo_pool_type"] == "private" %}
     pool: {{ env["azdo_pool_name"] }}
     {%- else %}
@@ -31,6 +32,7 @@ stages:
       HelmfileEnvironment: {{ env["name"] }}
     jobs:
       - deployment: {{ env["name"] | slugify | replace("-","_") }}
+        displayName: {{ env["name"] }}
         {%- if env["deployment_env"] %}
         environment: {{ env["deployment_env"] }}
         {%- endif %}
