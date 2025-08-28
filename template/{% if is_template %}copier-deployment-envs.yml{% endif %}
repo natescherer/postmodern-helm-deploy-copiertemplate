@@ -57,3 +57,23 @@ k8s_envs:
       azdo_service_connection: Prod Connection
       azdo_pool_type: hosted
       azdo_pool_name: ubuntu-latest
+    # Azure DevOps-deployed Standard Kubernetes Example Part 1
+    - display_name: kind-dev
+      job_name: kind-dev
+      depends_on_job: NoDependency
+      deployment_env: DEV
+      k8s_type: standard
+      k8s_cluster: kind-dev
+      k8s_ns: static-site
+      azdo_pool_type: private
+      azdo_pool_name: Self-Hosted
+    # Azure DevOps-deployed Standard Kubernetes Example Part 1
+    - display_name: kind-prd
+      job_name: kind-prd
+      depends_on_job: kind-dev
+      deployment_env: PRD
+      k8s_type: standard
+      k8s_cluster: kind-prd
+      k8s_ns: static-site
+      azdo_pool_type: private
+      azdo_pool_name: Self-Hosted
