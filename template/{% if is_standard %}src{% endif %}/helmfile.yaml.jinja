@@ -16,4 +16,4 @@ releases:
   version: 0.1.1
   values:
     - ./values/values.yaml.tmpl
-    - ./values/values.{{ .Environment.Name }}.yaml
+    - ./values/values.{% raw %}{{ .Environment.Name }}{% endraw %}.yaml
