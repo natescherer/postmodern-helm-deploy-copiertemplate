@@ -62,7 +62,7 @@
   ],
   "markdownlint.configFile": ".config/.markdownlint.yaml",
   "ruff.configuration": "${workspaceFolder}/.config/ruff.toml",
-  "typos.config": ".config/typos.toml",
+  "typos.config": "${workspaceFolder}\\.config\\typos.toml",
   "yamlfmt.args": [
     "-conf config/yamlfmt.yaml"
   ],

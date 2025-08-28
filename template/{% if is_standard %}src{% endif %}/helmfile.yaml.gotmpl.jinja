@@ -1,0 +1,19 @@
+environments:
+{%- for env in k8s_envs %}
+  {{ env["k8s_cluster"] + "(" + env["k8s_ns"] + ")" }}:
+    kubeContext: {{ env["k8s_cluster"] }}
+{%- endfor %}
+---
+repositories:
+ - name: cfpb
+   url: ghcr.io/cfpb
+   oci: true
+
+releases:
+- name: static-site
+  namespace: {% raw %}{{ .Environment.Name | trimSuffix ")" | splitList "(" | last }}{% endraw %}
+  chart: cfpb/static-site
+  version: 0.1.1
+  values:
+    - ./values/values.yaml
+    - ./values/values.{% raw %}{{ .Environment.Name }}{% endraw %}.yaml
