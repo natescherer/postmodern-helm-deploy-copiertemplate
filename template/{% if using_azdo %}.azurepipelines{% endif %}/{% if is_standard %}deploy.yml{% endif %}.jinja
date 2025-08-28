@@ -10,28 +10,27 @@ variables:
   MISE_ENV: ci
 
 stages:
-{%- for env in k8s_envs %}
-{% set base_name = env["k8s_cluster"] + "_" + env["k8s_ns"] %}
-  - stage: {{ env["job_name"] | slugify | replace("-","_") }}
+  {%- for env in k8s_envs %}
+  - stage: {{ env["name"] | slugify | replace("-","_") }}
     {%- if env["azdo_pool_type"] == "private" %}
     pool: {{ env["azdo_pool_name"] }}
     {%- else %}
     pool:
       vmImage: {{ env["azdo_pool_name"] }}
     {%- endif %}
-    {%- if env["depends_on_job"] == "NoDependency" %}
+    {%- if env["depends_on"] == "NoDependency" %}
     dependsOn: ""
-    {%- elif env["depends_on_job"] %}
-    dependsOn: {{ env["depends_on_job"] }}
+    {%- elif env["depends_on"] %}
+    dependsOn: {{ env["depends_on"] | slugify | replace("-","_") }}
     {%- endif %}
     variables:
       {%- if env["k8s_type"] == "aks" %}
       AKSCluster: {{ env["k8s_cluster"] }}
       AKSClusterResourceGroup: {{ env["aks_resource_group"] }}
       {%- endif %}
-      HelmfileEnvironment: {{ env["k8s_cluster"] + "[" + env["k8s_ns"] + "]" }}
+      HelmfileEnvironment: {{ env["name"] }}
     jobs:
-      - deployment: {{ base_name | slugify | replace("-","_") }}
+      - deployment: {{ env["name"] | slugify | replace("-","_") }}
         {%- if env["deployment_env"] %}
         environment: {{ env["deployment_env"] }}
         {%- endif %}
@@ -43,7 +42,12 @@ stages:
                 - template: template-aks-login.yml
                   parameters:
                     ServiceConnection: {{ env["azdo_service_connection"] }}
-                - template: template-helmfile-sync.yml
+                {%- endif %}
+                {%- if env["azdo_service_connection"] %}
+                - template: template-helmfile-sync-azcli.yml
                   parameters:
                     ServiceConnection: {{ env["azdo_service_connection"] }}
-{%- endfor %}
+                {%- else %}
+                - template: template-helmfile-sync-bash.yml
+                {%- endif %}
+  {%- endfor %}

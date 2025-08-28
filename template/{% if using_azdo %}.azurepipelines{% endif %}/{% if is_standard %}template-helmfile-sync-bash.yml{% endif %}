@@ -1,4 +1,6 @@
 steps:
+  - checkout: self
+    displayName: Checkout Repo Files
   - bash: |
       curl https://mise.run | sh
       echo "##vso[task.prependpath]$(HOME)/.local/bin"
@@ -7,11 +9,5 @@ steps:
     displayName: Mise Install
   - bash: mise install
     displayName: Mise Tool Install
-  - task: AzureCLI@2
+  - bash: mise x -- helmfile sync --file src/helmfile.yaml.gotmpl --environment "$(HelmfileEnvironment)"
     displayName: Helmfile Sync
-    inputs:
-      azureSubscription: ${{ parameters.ServiceConnection }}
-      scriptType: bash
-      scriptLocation: inlineScript
-      inlineScript: mise x -- helmfile sync --environment $(HelmfileEnvironment)
-      visibleAzLogin: false

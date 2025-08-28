@@ -11,7 +11,7 @@ def slugify_function(string):
         Slug version of input string.
 
     """
-    return slugify(string, only_ascii=True)
+    return slugify(string)
 
 
 class SlugifyExtension(Extension):
