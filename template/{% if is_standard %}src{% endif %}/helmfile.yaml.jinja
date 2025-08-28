@@ -11,7 +11,7 @@ repositories:
 
 releases:
 - name: static-site
-  namespace: {{ .StateValues.deploymentNamespace }}
+  namespace: {% raw %}{{ .StateValues.deploymentNamespace }}{% endraw %}
   chart: cfpb/static-site
   version: 0.1.1
   values:
