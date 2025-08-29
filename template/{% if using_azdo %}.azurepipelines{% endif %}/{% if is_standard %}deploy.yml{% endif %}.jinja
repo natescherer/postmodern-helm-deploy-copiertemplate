@@ -11,7 +11,7 @@ variables:
 
 stages:
   {%- for env in k8s_envs %}
-  {%- set k8s_cluster = env["id"].split(")")[0].split("(")[0] -%}
+  {%- set k8s_cluster = env["id"].split(")")[0].split("(")[0] %}
   - stage: {{ env["id"] | slugify | replace("-","_") }}
     displayName: {{ env["id"] }}
     {%- if env["azdo_pool_type"] == "private" %}

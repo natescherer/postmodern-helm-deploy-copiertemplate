@@ -1,6 +1,6 @@
 environments:
 {%- for env in k8s_envs %}
-  {%- set k8s_cluster = env["id"].split(")")[0].split("(")[0] -%}
+  {%- set k8s_cluster = env["id"].split(")")[0].split("(")[0] %}
   {{ env["id"] }}:
     kubeContext: {{ k8s_cluster }}
 {%- endfor %}
