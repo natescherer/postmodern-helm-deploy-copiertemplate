@@ -13,7 +13,7 @@ stages:
   {%- for env in k8s_envs %}
   {%- set k8s_cluster = env["id"].split(")")[0].split("(")[0] %}
   - stage: {{ env["id"] | slugify | replace("-","_") }}
-    displayName: {{ env["id"] }}
+    displayName: {% if env["display_name"] %}{{ env["display_name"] }}{% else %}{{ env["id"] }}{% endif %}
     {%- if env["azdo_pool_type"] == "private" %}
     pool: {{ env["azdo_pool_name"] }}
     {%- else %}
@@ -33,7 +33,7 @@ stages:
       HelmfileEnvironment: {{ env["id"] }}
     jobs:
       - deployment: {{ env["id"] | slugify | replace("-","_") }}
-        displayName: {{ env["id"] }}
+        displayName: {% if env["display_name"] %}{{ env["display_name"] }}{% else %}{{ env["id"] }}{% endif %}
         {%- if env["deployment_env"] %}
         environment: {{ env["deployment_env"] }}
         {%- endif %}
