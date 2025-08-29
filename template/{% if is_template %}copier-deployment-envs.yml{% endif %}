@@ -10,64 +10,52 @@ k8s_envs:
   multiselect: true
   choices:
     # Azure DevOps-deployed Azure Kubernetes Service Example Part 1
-    - name: region1-dev(app)
+    - id: region1-dev(app)
       depends_on: NoDependency
       deployment_env: dev
       k8s_type: aks
-      k8s_cluster: region1-dev
-      k8s_ns: app
       aks_resource_group: region1-dev-rg
       azdo_service_connection: Dev Connection
       azdo_pool_type: hosted
-      azdo_pool_name: ubuntu-latest
+      azdo_pool_id: ubuntu-latest
     # Azure DevOps-deployed Azure Kubernetes Service Example Part 2
-    - name: region1-prd(app)
+    - id: region1-prd(app)
       depends_on: region1-dev(app)
       deployment_env: prd
       k8s_type: aks
-      k8s_cluster: region1-prd
-      k8s_ns: app
       aks_resource_group: region1-prd-rg
       azdo_service_connection: Prod Connection
       azdo_pool_type: hosted
-      azdo_pool_name: ubuntu-latest
+      azdo_pool_id: ubuntu-latest
     # Azure DevOps-deployed Azure Kubernetes Service Example Part 3
-    - name: region2-dev(app)
+    - id: region2-dev(app)
       depends_on: NoDependency
       deployment_env: dev
       k8s_type: aks
-      k8s_cluster: region2-dev
-      k8s_ns: app
       aks_resource_group: region2-dev-rg
       azdo_service_connection: Dev Connection
       azdo_pool_type: hosted
-      azdo_pool_name: ubuntu-latest
+      azdo_pool_id: ubuntu-latest
     # Azure DevOps-deployed Azure Kubernetes Service Example Part 4
-    - name: region2-prd(app)
+    - id: region2-prd(app)
       depends_on: region2-dev(app)
       deployment_env: prd
       k8s_type: aks
-      k8s_cluster: region2-prd
-      k8s_ns: app
       aks_resource_group: region2-prd-rg
       azdo_service_connection: Prod Connection
       azdo_pool_type: hosted
-      azdo_pool_name: ubuntu-latest
+      azdo_pool_id: ubuntu-latest
     # Azure DevOps-deployed Standard Kubernetes Example Part 1
-    - name: kind-dev(static-site)
+    - id: kind-dev(static-site)
       depends_on: NoDependency
       deployment_env: DEV
       k8s_type: standard
-      k8s_cluster: kind-dev
-      k8s_ns: static-site
       azdo_pool_type: private
-      azdo_pool_name: Self-Hosted
+      azdo_pool_id: Self-Hosted
     # Azure DevOps-deployed Standard Kubernetes Example Part 2
-    - name: kind-prd(static-site)
+    - id: kind-prd(static-site)
       depends_on: kind-dev(static-site)
       deployment_env: PRD
       k8s_type: standard
-      k8s_cluster: kind-prd
-      k8s_ns: static-site
       azdo_pool_type: private
-      azdo_pool_name: Self-Hosted
+      azdo_pool_id: Self-Hosted
