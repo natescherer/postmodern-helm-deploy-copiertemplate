@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.3](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/compare/v0.3.2...v0.3.3) (2025-08-29)
+
+
+### Features
+
+* Add ability to override display name for deployment environments ([#130](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/issues/130)) ([4c96f43](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/commit/4c96f436a344f8b9bee20bb2c7f024be99536c0b))
+* Simplify deployment environment definitions ([#128](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/issues/128)) ([1d3aab7](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/commit/1d3aab7808fd0ad33053f5b6e612ba16e98695a6))
+
 ## [0.3.2](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/compare/v0.3.1...v0.3.2) (2025-08-28)
 
 
