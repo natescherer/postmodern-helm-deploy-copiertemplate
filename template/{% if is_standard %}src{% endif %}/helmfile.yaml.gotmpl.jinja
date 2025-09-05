@@ -18,3 +18,8 @@ releases:
   values:
     - ./values/values.yaml
     - ./values/values.{% raw %}{{ .Environment.Name }}{% endraw %}.yaml
+  # If you are having problems installing a chart for the first time, toggle both atomic and cleanupOnFail to false temporarily
+  atomic: true
+  cleanupOnFail: true
+  wait: true
+  timeout: 300
