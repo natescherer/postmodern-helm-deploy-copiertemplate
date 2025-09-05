@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.5](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/compare/v0.3.4...v0.3.5) (2025-09-05)
+
+
+### Features
+
+* Add per-release helm options ([#137](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/issues/137)) ([0babc8f](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/commit/0babc8feed0d76812efb2db18b76a5326bc75c04))
+
 ## [0.3.4](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/compare/v0.3.3...v0.3.4) (2025-09-03)
 
 
