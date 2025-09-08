@@ -18,6 +18,7 @@ env:
 jobs:
   mkdocs:
     runs-on: ubuntu-latest
+    timeout-minutes: 360
     steps:
       - name: Validate Secrets Exist
         shell: pwsh
@@ -42,7 +43,7 @@ jobs:
         run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-      - uses: jdx/mise-action@v2
+      - uses: jdx/mise-action@v3
         with:
           experimental: true
       - run: mkdocs build -f .config/mkdocs/mkdocs.yml -d ../../docs_site

@@ -5,14 +5,16 @@
   "include-v-in-tag": true,
   "plugins": ["sentence-case"],
   "packages": {
-    ".": {
+    "{% if is_template %}template{% else %}.{% endif %}": {
       "release-type": "simple",
-      "changelog-path": "CHANGELOG.md"
+      "changelog-path": "{% if is_template %}/{% endif %}CHANGELOG.md"
     }
-  }{% if is_template %},
+  },
+  {%- if is_template %}
   "changelog-sections": [
     { "type": "feat", "section": "Features", "hidden": false },
     { "type": "fix", "section": "Bug Fixes", "hidden": false },
     { "type": "chore", "section": "Miscellaneous", "hidden": false }
-  ]{% endif %}
+  ]
+  {%- endif %}
 }
