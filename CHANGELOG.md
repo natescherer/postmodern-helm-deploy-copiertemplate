@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.8](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/compare/v0.3.7...v0.3.8) (2025-09-08)
+
+
+### Bug Fixes
+
+* Restore python-slugify dependency ([#145](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/issues/145)) ([078c5ad](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/commit/078c5adb8d426952301ab2103ed39f24c5961878))
+
 ## [0.3.7](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/compare/v0.3.6...v0.3.7) (2025-09-08)
 
 
