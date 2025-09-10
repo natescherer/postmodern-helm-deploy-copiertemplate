@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.10](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/compare/v0.3.9...v0.3.10) (2025-09-10)
+
+
+### Bug Fixes
+
+* Fix release azdo pipelines ([#150](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/issues/150)) ([622506a](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/commit/622506aed483ace3c6aeeb63d4b3d680a9053c6e))
+
 ## [0.3.9](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/compare/v0.3.8...v0.3.9) (2025-09-10)
 
 
