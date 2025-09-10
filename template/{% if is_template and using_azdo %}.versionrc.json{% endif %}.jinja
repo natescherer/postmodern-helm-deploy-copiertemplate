@@ -1,18 +1,26 @@
 {
-  "writerOpts": {
-    "reverse": false,
-    "commitsSort": false
-  },
-  "parserOpts": {
-    "headerPattern": "(?:\\(Merged PR \\d+: \\))?([a-zA-Z]+)(?:\\(([\\w$\\.\\-*\\s]*)\\))?\\!?:(.*)"
-  },
   "bumpFiles": [
     {
-      "filename": ".version.txt",
+      "filename": ".config/version.txt",
       "type": "plain-text"
     }
   ],
-  "releaseCommitMessageFormat": {% raw %}"chore: release {{currentTag}} [skip ci]"{% endraw %},
+  "commitAll": false,
+  "compareUrlFormat": "{% raw %}{{host}}/{{owner}}/{{repository}}/branches?baseVersion=GB{{previousTag}}&targetVersion=GB{{currentTag}}&_a=files{% endraw %}",
+  "noVerify": true,
+  "parserOpts": {
+    "headerPattern": "(?:\\(Merged PR \\d+: \\))?([a-zA-Z]+)(?:\\(([\\w$\\.\\-*\\s]*)\\))?\\!?:(.*)"
+  },
+  {%- if is_prerelease %}
+  "preMajor": true,
+  {%- endif %}
+  "releaseCommitMessageFormat": {% raw %}"chore: release {{currentTag}}"{% endraw %},
+  "skip": {
+    "bump": false,
+    "changelog": false,
+    "commit": false,
+    "tag": false
+  },
   "types": [
     {
       "type": "build",
@@ -70,16 +78,9 @@
       "hidden": false
     }
   ],
-{% if is_prerelease -%}
-  "preMajor": true,
-{%- endif %}
-  "skip": {
-    "bump": false,
-    "changelog": false,
-    "commit": false,
-    "tag": false
-  },
   "tagPrefix": "v",
-  "noVerify": true,
-  "commitAll": false
+  "writerOpts": {
+    "reverse": false,
+    "commitsSort": false
+  }
 }
