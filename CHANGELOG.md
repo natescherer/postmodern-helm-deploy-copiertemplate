@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.11](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/compare/v0.3.10...v0.3.11) (2025-09-10)
+
+
+### Features
+
+* Apply v0.5.24 ([#152](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/issues/152)) ([b9c5bb4](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/commit/b9c5bb4d7ba725fcbc59836d3cd0cddb29a0b84c))
+
 ## [0.3.10](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/compare/v0.3.9...v0.3.10) (2025-09-10)
 
 
