@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.13](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/compare/v0.3.12...v0.3.13) (2025-09-10)
+
+
+### Bug Fixes
+
+* Remove duplicate files ([#156](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/issues/156)) ([54da16a](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/commit/54da16a5c33c6e824111164c78286247c98591a6))
+
 ## [0.3.12](https://github.com/natescherer/postmodern-helm-deploy-copiertemplate/compare/v0.3.11...v0.3.12) (2025-09-10)
 
 
