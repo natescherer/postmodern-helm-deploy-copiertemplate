@@ -19,11 +19,6 @@ jobs:
         with:
           subcommand: check-update
           answers-file: .config/copier-answers.yml
-      - name: Test logging
-        run: |
-          echo "check-update_update_available: ${{ steps.copier.outputs.check-update_update_available }}"
-          echo "check-update_current_version: ${{ steps.copier.outputs.check-update_current_version }}"
-          echo "check-update_latest_version: ${{ steps.copier.outputs.check-update_latest_version }}"
       - name: Notify if Update is Available
         if: steps.copier.outputs.check-update_update_available == 'true'
         uses: cstuder/apprise-ga@v3.1.0
