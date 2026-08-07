@@ -1,64 +1,91 @@
 [hooks]
-{% raw %}postinstall = ["{% set is_in_ci = get_env(name='CI', default='') %}{% if is_in_ci %}echo 'Not setting up git hooks as mise is running in CI!'{% else %}pre-commit install -c .config/.pre-commit-config.yaml{% endif %}"]{% endraw %}
+{% raw %}postinstall = [
+  "{% set is_in_ci = get_env(name='CI', default='') %}{% if is_in_ci %}echo 'Not setting up git hooks as mise is running in CI!'{% else %}prek install -f -c .config/prek.toml{% endif %}",
+]{% endraw %}
 
 [settings]
 experimental = true # Needed for hooks as of v2025.6.2
-windows_default_inline_shell_args = "powershell.exe /c"
 
 [tasks.copier-update]
 run = "copier update --answers-file .config/copier-answers.yml --skip-answered --trust"
 
 [tasks.docs-server]
-run = "mkdocs serve -f .config/mkdocs/mkdocs.yml"
+run = "zensical serve"
+{%- if is_template %}
 
 [tasks.test]
-run = '''
-pre-commit run -c .config/.pre-commit-config.yaml --all-files
-copier copy --trust --vcs-ref=HEAD --pretend -d 'repo_name=render-test' -d 'author_name=Name' -d 'repo_setup_actions=None' -d 'developer_platform=GitHub' -d 'github_username=username' -d 'github_org=' -d 'project_description=Rendering Test' -d 'project_type=Template' -d 'project_name=Rendering Test' -d 'project_visibility=Public' -d 'license=MIT' -d 'mkdocs_target=docs_site Directory in Repo' -d 'lifecycle=Pre-Alpha' . fake-path
-'''
+run = "pytest tests/"
 
-{%- if is_template %}
 [tasks.integration-test-gh]
 run = '''
-copier copy --trust --vcs-ref={% raw %}{{option(name="branch",default="HEAD")}}{% endraw %} -d 'developer_platform=GitHub' -d 'project_description=Integration Test - NOT FOR PUBLIC USE' -d 'project_type=Template' -d 'project_name=Integration Test' -d 'project_visibility=Public' -d 'license=MIT' -d 'lifecycle=Pre-Alpha' {% if using_github %}https://github.com/{{ github_repo_owner }}/{{ repo_name }}{% elif using_azdo %}git+https://dev.azure.com/{{ azdo_org }}/{{ azdo_project_encoded }}/_git/{{ repo_name }}{% endif %} {% raw %}{{option(name="path")}}{% endraw %}
+copier copy --trust --vcs-ref={% raw %}{{option(name="branch",default="HEAD")}}{% endraw %} -d 'repo_setup_actions=Create Repo' -d 'developer_platform=GitHub' -d 'project_description=Integration Test - NOT FOR PUBLIC USE' -d 'project_type=Template' -d 'project_name=Integration Test' -d 'project_visibility=Public' -d 'license=MIT' -d 'lifecycle=Pre-Alpha' {% if using_github %}https://github.com/{{ github_repo_owner }}/{{ repo_name }}{% elif using_azdo %}git+https://dev.azure.com/{{ azdo_org }}/{{ azdo_project_encoded }}/_git/{{ repo_name }}{% endif %} {% raw %}{{option(name="path")}}{% endraw %}
 '''
 
 [tasks.integration-test-azdo]
 run = '''
-copier copy --trust --vcs-ref={% raw %}{{option(name="branch",default="HEAD")}}{% endraw %} -d 'developer_platform=Azure DevOps' -d 'project_description=Integration Test - NOT FOR PUBLIC USE' -d 'project_type=Template' -d 'project_name=Integration Test' -d 'project_visibility=Private' -d 'license=None' -d 'lifecycle=Pre-Alpha' {% if using_github %}https://github.com/{{ github_repo_owner }}/{{ repo_name }}{% elif using_azdo %}git+https://dev.azure.com/{{ azdo_org }}/{{ azdo_project_encoded }}/_git/{{ repo_name }}{% endif %} {% raw %}{{option(name="path")}}{% endraw %}
+copier copy --trust --vcs-ref={% raw %}{{option(name="branch",default="HEAD")}}{% endraw %} -d 'repo_setup_actions=Create Repo' -d 'developer_platform=Azure DevOps' -d 'project_description=Integration Test - NOT FOR PUBLIC USE' -d 'project_type=Template' -d 'project_name=Integration Test' -d 'project_visibility=Private' -d 'license=None' -d 'lifecycle=Pre-Alpha' {% if using_github %}https://github.com/{{ github_repo_owner }}/{{ repo_name }}{% elif using_azdo %}git+https://dev.azure.com/{{ azdo_org }}/{{ azdo_project_encoded }}/_git/{{ repo_name }}{% endif %} {% raw %}{{option(name="path")}}{% endraw %}
 '''
 {%- endif %}
 
 [tools]
 # Backends
 {#- renovate: datasource=python-version depName=python versioning=python #}
-python = "3.13.7" # Used by copier and pre-commit
+python = "3.14.7" # Used by copier
+{#- renovate: datasource=github-releases depName=astral-sh/uv #}
+uv = "0.12.2" # Used by pipx tools
 # Tools
+{%- if is_template or using_github %}
+{#- is_template needs this even on Azure DevOps: copy-template-files embeds a full,
+   unrendered copy of template/ (including its .github/workflows/*.yml) for any child
+   template to use, regardless of *this* project's own developer_platform. #}
+{#- renovate: datasource=github-releases depName=rhysd/actionlint #}
+actionlint = "1.7.12"
+{%- endif %}
+{#- renovate: datasource=github-releases depName=crate-ci/typos #}
+"aqua:crate-ci/typos" = "1.49.0"
+{#- renovate: datasource=github-releases depName=j178/prek #}
+"aqua:j178/prek" = "0.4.12"
+{#- renovate: datasource=github-releases depName=owenlamont/ryl #}
+"aqua:owenlamont/ryl" = "0.21.0"
+{#- renovate: datasource=github-releases depName=tombi-toml/tombi #}
+"aqua:tombi-toml/tombi" = "1.2.6"
+{#- renovate: datasource=github-releases depName=crate-ci/committed #}
+committed = "1.1.11"
 {#- renovate: datasource=github-releases depName=helm/helm #}
 helm = "3.18.6"
-{#- renovate: datasource=pypi depName=pre-commit versioning=pep440 #}
-"pipx:pre-commit" = "4.3.0"
-{#- renovate: datasource=github-releases depName=astral-sh/uv #}
-uv = "0.8.15" # Used by pipx tools
-{#- renovate: datasource=github-releases depName=google/yamlfmt #}
-yamlfmt = "0.17.2" # Needed by VSCode extension bluebrown.yamlfmt, can be removed when https://github.com/bluebrown/vscode-extension-yamlfmt/issues/2 is resolved
+{#- renovate: datasource=github-releases depName=lycheeverse/lychee #}
+lychee = "0.15.1"
+{%- if is_template %}
+{#- renovate: datasource=github-releases depName=astral-sh/ruff #}
+ruff = "0.16.1"
+{%- endif %}
+{#- renovate: datasource=github-releases depName=rvben/rumdl #}
+rumdl = "0.2.52"
+{#- renovate: datasource=github-releases depName=koalaman/shellcheck #}
+shellcheck = "0.11.0"
 
 [tools.helmfile]
 version = "1.1.5"
 postinstall = "mise x -- helmfile init --force"
 
 [tools."pipx:copier"]
-version = "9.10.1"
-uvx_args = "--with copier-template-extensions==0.3.3 --with jinja2-shell-extension==2.1.1 --with jinja2-time==0.2.0 --with python-slugify==8.0.4"
+version = "9.17.1"
+uvx_args = "--with jinja2-shell-extension==2.1.1"
+{%- if is_template %}
+
+[tools."pipx:pytest"]
+version = "9.1.1"
+# pytest-github-actions-annotate-failures / pytest-azurepipelines surface pytest
+# failures and warnings as native platform annotations (::warning::/::error:: on
+# GitHub, ##vso[task.logissue] on Azure DevOps) with zero config -- they auto-detect
+# their CI via the env vars each platform already sets.
+uvx_args = "--with pyyaml==6.0.3 --with jinja2==3.1.6 --with jinja2-ansible-filters==1.3.2{% if using_github %} --with pytest-github-actions-annotate-failures==0.4.2{% elif using_azdo %} --with pytest-azurepipelines==1.0.5{% endif %}"
+{%- endif %}
 
 [tools."pipx:invoke"]
-version = "2.2.0"
-uvx_args = "--with copier==9.10.1 --with githubkit==0.13.2 --with requests==2.32.5 --with rich==14.1.0"
+version = "3.0.3"
+uvx_args = "--with copier==9.17.1 --with githubkit==0.16.0 --with requests==2.34.2 --with rich==15.0.0"
 
-[tools."pipx:mkdocs"]
-version = "1.6.1"
-uvx_args = "--with mkdocs-material[imaging]==9.6.19 --with mkdocs-static-i18n==1.3.0 --with mike==2.1.3"
-
-[tools."ubi:flavio/kuberlr"]
-version = "0.6.1"
-rename_exe = "kubectl"
+[tools."pipx:zensical"]
+version = "0.0.53"
+uvx_args = "--with git+https://github.com/squidfunk/mike.git@2.2.0+zensical-0.1.0"

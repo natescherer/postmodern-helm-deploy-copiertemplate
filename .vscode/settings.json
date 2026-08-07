@@ -8,7 +8,6 @@
   "[markdown]": {
     "editor.tabSize": 2
   },
-  "evenBetterToml.taplo.configFile.path": ".config/taplo.toml",
   "files.associations": {
     "**/.azurepipelines/*.yml": "azure-pipelines",
     "**LICENSE*.jinja": "jinja",
@@ -17,11 +16,12 @@
     "**.md*.jinja*": "jinja-md",
     "copier.yml": "jinja-yaml",
     "**.y*ml*.jinja": "jinja-yaml",
+    "**.toml*.jinja": "jinja-toml",
     "**.json[{]% endif %[}]": "json",
     "**.md[{]% endif %[}]": "markdown",
     "**.y*ml[{]% endif %[}]": "yaml",
     "**.py[{]% endif %[}]": "python",
-    "**.toml[{]% endif %[}]": "toml",
+    "**.toml[{]% endif %[}]": "toml"
   },
   "markdown.validate.ignoredLinks": [
     // START Ignore allcontributors links
@@ -60,23 +60,7 @@
     "#video*",
     // END Ignore allcontributors links
   ],
-  "markdownlint.configFile": ".config/.markdownlint.yaml",
   "ruff.configuration": "${workspaceFolder}/.config/ruff.toml",
-  "typos.config": "${workspaceFolder}\\.config\\typos.toml",
-  "yamlfmt.args": [
-    "-conf config/yamlfmt.yaml"
-  ],
-  "yaml.schemas": {
-    "https://squidfunk.github.io/mkdocs-material/schema.json": "mkdocs.yml"
-  },
-  "yaml.customTags": [
-    "!ENV scalar",
-    "!ENV sequence",
-    "!relative scalar",
-    "tag:yaml.org,2002:python/name:material.extensions.emoji.to_svg",
-    "tag:yaml.org,2002:python/name:material.extensions.emoji.twemoji",
-    "tag:yaml.org,2002:python/name:pymdownx.superfences.fence_code_format",
-    "tag:yaml.org,2002:python/object/apply:pymdownx.slugs.slugify mapping"
-  ],
-  "python.defaultInterpreterPath": "C:\\Users\\nate\\.local\\share\\mise\\installs\\python\\3.13.7\\python.exe"
+  "ryl.configPath": ".config/ryl.toml",
+  "typos.config": ".config/typos.toml"
 }

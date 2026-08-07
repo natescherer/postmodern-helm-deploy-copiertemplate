@@ -1,0 +1,32 @@
+name: "[Test] PR Validation"
+
+on:
+  pull_request:
+
+concurrency:
+  group: {% raw %}${{ github.head_ref || github.run_id }}{% endraw %}
+  cancel-in-progress: true
+
+permissions: read-all
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: jdx/mise-action@7e36c90d9ab29c415a2384db3006f3ec8a8cc654 # v4
+        with:
+          experimental: true
+      - id: changed-files
+        uses: tj-actions/changed-files@9426d40962ed5378910ee2e21d5f8c6fcbf2dd96 # v47.0.6
+      - name: Run Prek Tests
+        run: |
+          mise x -- prek run -c .config/prek.toml --files {% raw %}${{ steps.changed-files.outputs.all_changed_files }}{% endraw %}
+{%- if is_template %}
+      - name: Run Template Render Tests
+        run: |-
+          mise x -- pytest tests/
+{%- endif %}

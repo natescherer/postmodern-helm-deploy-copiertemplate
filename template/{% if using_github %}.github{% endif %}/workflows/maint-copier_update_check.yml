@@ -5,53 +5,43 @@ on:
     - cron: 0 17 * * 1 # Every Monday at 5pm UTC
   workflow_dispatch:
 
-permissions:
-  contents: write
-  pull-requests: write
-
-env:
-  MISE_ENV: ci
-
 jobs:
-  update-check:
+  copier-check-update:
     runs-on: ubuntu-latest
-    timeout-minutes: 360
+    timeout-minutes: 15
+    permissions:
+      contents: read
     steps:
-      - name: Validate Secrets Exist
-        shell: pwsh
-        env:
-          APPRISE_URI: ${{ secrets.APPRISE_URI }}
-        run: |
-          $Secrets = @("APPRISE_URI")
-          $MissingSecret = $False
-          foreach ($Secret in $Secrets) {
-            if (!([Environment]::GetEnvironmentVariable($Secret))) {
-              Write-Host -Object "::error title=Missing Secret::Required Actions secret '$Secret' is not set! Please add it in repo/org settings."
-              $MissingSecret = $True
-            }
-          }
-          if ($MissingSecret) {
-            throw "Erroring as one or more required secrets are missing!"
-          }
-      - uses: actions/checkout@v5
-      - uses: jdx/mise-action@v3
+      - name: Checkout Repository
+        uses: actions/checkout@v7
         with:
-          experimental: true
-      - name: Check for Template Updates
-        shell: pwsh
+          fetch-depth: 0 # Ensures tags are checked out
+      - name: Validate Secrets Exist
+        uses: ./.github/actions/require-secrets
+        with:
+          secrets: |
+            APPRISE_URL=${{ secrets.APPRISE_URL }}
+      - name: Check for Copier Template Updates
+        id: copier
+        uses: natescherer/copier-action@b1ee418e5ee2e4334fc26094b9e84be3b93112ac # v0
+        with:
+          subcommand: check-update
+      - name: Notify if Update is Available
+        if: steps.copier.outputs.check-update_update_available == 'true'
+        uses: cstuder/apprise-ga@6eeb31014014413a118d716eacf7cabf67cc8430 # v3.1.0
+        with:
+          title: ${{ github.repository }} Template Update Available
+          message: |
+            Repository ${{ github.repository }} has a new template update available.
+
+            Current version is ${{ steps.copier.outputs.check-update_current_version }}, latest version is ${{ steps.copier.outputs.check-update_latest_version }}.
         env:
-          APPRISE_URI: ${{ secrets.APPRISE_URI }}
-        run: |
-          $CurrentVersion = $(yq '._commit' .config/copier-answers.yml).TrimStart("v")
-          $Output = copier update --answers-file .config/copier-answers.yml --skip-answered --pretend --trust 2>&1
-          $NewVersion = $Output[0].ToString().Split(" ")[-1]
-          if ([System.Version]$CurrentVersion -lt [System.Version]$NewVersion) {
-            apprise -i html -t "[${{ github.repository }}] Template Update Available" -b "Current Version: <i>$CurrentVersion</i> New Version: <i>$NewVersion</i><br><br>Run <b>mise run copier-update</b> to update." $env:APPRISE_URI
-          }
+          APPRISE_URL: ${{ secrets.APPRISE_URL }}
   workflow-keepalive:
     if: github.event_name == 'schedule'
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       actions: write
     steps:
-      - uses: liskin/gh-workflow-keepalive@v1
+      - uses: liskin/gh-workflow-keepalive@581532d619d4390ec4ec5c34376cee42462fd1d6 # v1
