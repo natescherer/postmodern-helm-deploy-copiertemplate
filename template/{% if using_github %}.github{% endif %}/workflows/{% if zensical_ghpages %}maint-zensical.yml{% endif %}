@@ -1,0 +1,83 @@
+name: "[Maint] Zensical Publish to GitHub Pages"
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - zensical.toml
+      - .github/workflows/maint-zensical.yml
+      - docs/**
+  release:
+    types:
+      - published
+  workflow_dispatch:
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+env:
+  MISE_ENV: ci
+
+jobs:
+  build-zensical:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Configure Git Credentials
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+      - uses: jdx/mise-action@7e36c90d9ab29c415a2384db3006f3ec8a8cc654 # v4
+        with:
+          experimental: true
+      - run: echo "cache_id=$(date --utc '+%V')" >> "$GITHUB_ENV"
+      - uses: actions/cache@v6
+        with:
+          key: zensical-${{ env.cache_id }}
+          path: ~/.cache
+          restore-keys: |
+            zensical-
+      - uses: jiangxin/file-exists-action@20ca7a67e52212b4ecfd1cbc8d872ae2a8b5001c # v1
+        id: index-check
+        with:
+          path: index.html
+          ref: gh-pages
+      - run: mike set-default --push --allow-undefined dev
+        if: ${{ steps.index-check.outputs.exists == 'false' }}
+      - run: mike deploy --push --update-aliases dev
+        if: ${{ github.event_name == 'push' }}
+      - run: |
+          mike deploy --push --update-aliases ${{ github.event.release.tag_name }} latest
+          mike set-default --push latest
+        if: ${{ github.event_name == 'release' }}
+  deploy-zensical:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: build-zensical
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          ref: gh-pages
+      - name: Setup Pages
+        uses: actions/configure-pages@v6
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: '.'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

@@ -5,24 +5,30 @@
 {%- endif -%}
 {%- if is_prerelease %}
 
-<!-- prettier-ignore-start -->
-| :exclamation:  Notice: This project is currently in a {{ lifecycle }} state and {% if lifecycle == "Pre-Alpha" or lifecycle == "Alpha" %}is not ready for public use{% else %}should be used with caution{% endif %}. |
+<!-- Don't edit/remove this yourself! This is managed by the 'lifecycle' Copier answer. -->
+
+| :exclamation: Notice: This project is currently in a {{ lifecycle }} state and {% if lifecycle == "Pre-Alpha" or lifecycle == "Alpha" %}is not ready for public use{% else %}should be used with caution{% endif %}. |
 | ------------------------------------------------------------------------------------ |
-<!-- prettier-ignore-end -->
 {%- elif lifecycle == "Inactive" %}
 
 | :zap: Notice: This project is no longer under active development. |
-|------------------------------------------------------------------ |
+| ----------------------------------------------------------------- |
+{%- endif %}
+{%- if is_public and license == 'None' %}
+
+| :warning: Notice: This project does not currently have a license set. Until a license is added, no one may legally use, copy, modify, or distribute this code without your explicit permission. |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 {%- endif %}
 
 Describe your project here.
 
 ## Documentation
+{%- if zensical_ghpages %}
 
-{% if mkdocs_ghpages -%}
 For detailed documentation, see [https://{{github_repo_owner}}.github.io/{{repo_name}}](https://{{github_repo_owner}}.github.io/{{repo_name}}).
 {%- endif %}
-{%- if mkdocs_repo %}
+{%- if zensical_repo %}
+
 For detailed documentation, clone this repo and open `docs_site/index.html`.
 {%- endif %}
 
@@ -51,10 +57,12 @@ Contributions and bug reports are gladly accepted! Please see [CONTRIBUTING.md](
 
 This project follows the [all-contributors](https://allcontributors.org) specification.
 Contributions of any kind are welcome!
+{%- if using_mit %}
 
 ## License
 
 This project is licensed under The MIT License - see [LICENSE](LICENSE) for details.
+{%- endif %}
 {%- endif %}
 
 ## Repository Template

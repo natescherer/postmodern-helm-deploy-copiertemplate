@@ -1,0 +1,36 @@
+# Prerequisites
+{%- if using_azdo %}
+
+## Azure DevOps
+
+### One-Time Actions per Azure DevOps Project
+
+In order to support the proper parsing of Conventional Commits, the following must be set:
+
+- `Project settings`
+- `Repo` > `Repositories`
+- `Settings` tab
+- `All Repositories` section
+- Ensure `Include PR ID in the completion commit message title by default` is set to `Off`
+{%- endif %}
+{%- if using_github %}
+
+## GitHub
+
+### One-Time Actions Per GitHub User/Organization
+
+1. Install the [AllContributors GitHub App](https://github.com/apps/allcontributors/installations/new) for your user or organization.
+    - This app provides automatic README crediting when other people contribute to your project
+    - If you know you are only going to be making Private projects, you can skip installing this app
+    - It is recommended that you give it access to all your repositories, which means you only need to do this step once rather than for each new repo.
+1. Install the [Renovate GitHub App](https://github.com/apps/renovate) for your user or organization.
+    - This app provides automatic dependency updates for your project
+    - It is recommended that you give it access to all your repositories, which means you only need to do this step once rather than for each new repo.
+1. Ensure `Private vulnerability reporting > Automatically enable for new public repositories` is checked [in the repo settings](https://github.com/settings/security_analysis).
+{%- endif %}
+
+## Personal Access Tokens
+
+Unless you choose `None` for the `repo_setup_actions` question, Copier will prompt you for a
+Personal Access Token part-way through the run. See [Token Permissions](token_permissions.md) for
+the minimum scopes needed and why.

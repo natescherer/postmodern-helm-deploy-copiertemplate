@@ -2,12 +2,7 @@
 _answers_file: .config/copier-answers.yml
 
 _jinja_extensions:
-  # External Dependencies
-  - copier_template_extensions.TemplateExtensionLoader
   - jinja2_shell_extension.ShellExtension
-  # Internal Dependencies
-  - extensions/slugify_extension.py:SlugifyExtension
-  - extensions/yaml_quote_extension.py:YamlQuoteExtension
 
 _message_before_copy: Thanks for using this template! Please consult the 'Template Questions' page in documentation for deeper explanation of each question.
 
@@ -27,8 +22,7 @@ parent_template_url:
 repo_name:
   type: str
   help: |
-    The name of this project's Git repository. Defaults to the name of the destination folder.
-    DO NOT CHANGE ON UPDATE!
+    {% if not project_initialized %}The name of this project's Git repository. Defaults to the name of the destination folder.{% else %}Locked value on update, press Enter.{% endif %}
   default: "{{ _copier_conf.dst_path | basename }}"
 
 author_name:
@@ -39,25 +33,23 @@ author_name:
 developer_platform:
   type: str
   help: |
-    The platform where you are going to host your Git repo and CI/CD.
-    DO NOT CHANGE ON UPDATE!
+    {% if not project_initialized %}The platform where you are going to host your Git repo and CI/CD.{% else %}Locked value on update, press Enter.{% endif %}
   choices:
     GitHub:
       value: GitHub
       validator: Not Currently Implemented
     Azure DevOps:
       value: Azure DevOps
-
+  default: GitHub
 repo_setup_actions:
   type: str
   help: |
-    New project? 'Create Repo'. Existing project? 'Set Repo Rules'. Don't want to do anything? 'None'.
-    DO NOT CHANGE ON UPDATE!
+    {% if not project_initialized %}New project? 'Create Repo'. Existing project? 'Set Repo Rules'. Don't want to do anything? 'None'.{% else %}Locked value on update, press Enter.{% endif %}
   choices:
     - Create Repo
     - Set Repo Rules
     - None
-
+  default: Create Repo
 github_token:
   type: str
   secret: true
@@ -68,23 +60,23 @@ github_token:
 github_username:
   type: str
   help: |
-    Your GitHub username. Repo will be created under this user unless an org is specified. Autodetect attempted from Git 'user.email'.
-    DO NOT CHANGE ON UPDATE!
+    {% if not project_initialized %}Your GitHub username. Repo will be created under this user unless an org is specified. Autodetect attempted from Git 'user.email'.{% else %}Locked value on update, press Enter.{% endif %}
+  # Assumes GitHub's noreply-email pattern (12345+username@users.noreply.github.com); for any
+  # other "+"-tagged email (e.g. user+tag@gmail.com) this will incorrectly default to the tag.
   default: "{{ (('git config --global user.email' | shell()).split('+') | last).split('@') | first }}"
   when: "{{ developer_platform == 'GitHub' }}"
 
 github_org:
   type: str
   help: |
-    [OPTIONAL] If this repo is part of a GitHub organization, supply its name here.
-    DO NOT CHANGE ON UPDATE!
+    {% if not project_initialized %}If this repo is part of a GitHub organization, supply its name here, otherwise leave the default value of 'None'.{% else %}Locked value on update, press Enter.{% endif %}
+  default: None
   when: "{{ developer_platform == 'GitHub' }}"
 
 azdo_org:
   type: str
   help: |
-    The Azure DevOps organization for this project.
-    DO NOT CHANGE ON UPDATE!
+    {% if not project_initialized %}The Azure DevOps organization for this project.{% else %}Locked value on update, press Enter.{% endif %}
   when: "{{ developer_platform == 'Azure DevOps' }}"
 
 azdo_token:
@@ -97,23 +89,20 @@ azdo_token:
 azdo_project:
   type: str
   help: |
-    The Azure DevOps project for your repo.
-    DO NOT CHANGE ON UPDATE!
+    {% if not project_initialized %}The Azure DevOps project for your repo.{% else %}Locked value on update, press Enter.{% endif %}
   when: "{{ developer_platform == 'Azure DevOps' }}"
 
 project_type:
   type: str
   help: |
-    If you are creating a repo that will deploy a Helmfile, choose Standard.
-    If you are creating a child template, choose Template.
-    DO NOT CHANGE ON UPDATE!
+    {% if not project_initialized %}If you are creating a repo that will deploy a Helmfile, choose Standard. If you are creating a child template, choose Template.{% else %}Locked value on update, press Enter.{% endif %}
   choices:
     Standard:
       value: Standard
       validator: Not Yet Implemented
     Template:
       value: Template
-
+  default: Standard
 project_name:
   type: str
   help: The friendly name of this project, which can include captitals, spaces, etc.
@@ -125,15 +114,14 @@ project_description:
 project_visibility:
   type: str
   help: |
-    Choose if you want this project to be Public or Private.
-    DO NOT CHANGE ON UPDATE!
+    {% if not project_initialized %}Choose if you want this project to be Public or Private.{% else %}Locked value on update, press Enter.{% endif %}
   choices:
     Public:
       value: Public
       validator: "{% if developer_platform == 'Azure DevOps' %}Not Supported on Azure DevOps{% endif %}"
     Private:
       value: Private
-
+  default: "{% if developer_platform == 'Azure DevOps' %}Private{% else %}Public{% endif %}"
 license:
   type: str
   help: Choose the license for this project.
@@ -144,18 +132,17 @@ license:
     None:
       value: None
 
-mkdocs_target:
+zensical_target:
   type: str
   help: |
-    Choose how you want to publish your documentation
-    DO NOT CHANGE ON UPDATE!
+    {% if not project_initialized %}Choose how you want to publish your documentation{% else %}Locked value on update, press Enter.{% endif %}
   choices:
     GitHub Pages:
       value: GitHub Pages
       validator: "{% if developer_platform == 'Azure DevOps' %}Not Supported on Azure DevOps{% endif %}"
     docs_site Directory in Repo:
       value: docs_site Directory in Repo
-
+  default: "{% if developer_platform == 'Azure DevOps' %}docs_site Directory in Repo{% else %}GitHub Pages{% endif %}"
 lifecycle:
   type: str
   help: Choose what state this project is in.
@@ -175,7 +162,7 @@ using_github:
 
 github_repo_owner:
   type: str
-  default: "{% if github_org %}{{ github_org }}{% else %}{{ github_username }}{% endif %}"
+  default: "{% if github_org and github_org != 'None' %}{{ github_org }}{% else %}{{ github_username }}{% endif %}"
   when: false
 
 using_azdo:
@@ -185,7 +172,7 @@ using_azdo:
 
 azdo_project_encoded:
   type: str
-  default: "{{ azdo_project | replace(' ','%20') }}"
+  default: "{{ azdo_project | urlencode }}"
   when: false
 
 using_mit:
@@ -228,14 +215,26 @@ should_set_repo_settings:
   default: "{% if repo_setup_actions == 'Create Repo' or repo_setup_actions == 'Set Repo Rules' %}true{% endif %}"
   when: false
 
-mkdocs_ghpages:
+zensical_ghpages:
   type: bool
-  default: "{% if mkdocs_target == 'GitHub Pages' %}true{% endif %}"
+  default: "{% if zensical_target == 'GitHub Pages' %}true{% endif %}"
   when: false
 
-mkdocs_repo:
+zensical_repo:
   type: bool
-  default: "{% if mkdocs_target == 'docs/site Directory in Repo' or using_azdo %}true{% endif %}"
+  default: "{% if zensical_target == 'docs_site Directory in Repo' or using_azdo %}true{% endif %}"
+  when: false
+
+# Reads the version Release Please last committed to .config/release-please-manifest.json, via `git show`
+# so it works regardless of shell.
+current_release_please_version:
+  type: str
+  default: "{% if _copier_operation == 'update' and using_github %}{% set _rp_manifest = ('git show HEAD:.config/release-please-manifest.json' | shell()) | from_json %}{{ _rp_manifest.values() | first }}{% endif %}"
+  when: false
+
+current_release_please_version_is_pre_1:
+  type: bool
+  default: "{% if current_release_please_version.split('.')[0] == '0' %}true{% endif %}"
   when: false
 
 ## Locked Computed Values
@@ -250,11 +249,11 @@ copyright_year:
 _tasks:
   - command: invoke copy-template-files --src-path {{ _copier_conf.src_path }}{% if _copier_conf.vcs_ref %} --vcs-ref {{ _copier_conf.vcs_ref }}{% endif %}
     when: "{% if is_template %}true{% endif %}"
-  - command: invoke create-repo-github --repo-name {{ repo_name }} --github-repo-description "{{ project_description }}" --github-repo-owner {{ github_repo_owner }} --is-public {{ is_public }}{% if github_org %} --github-org {{ github_org }}{% endif %}
+  - command: invoke create-repo-github --repo-name {{ repo_name }} --github-repo-description "{{ project_description }}" --github-repo-owner {{ github_repo_owner }} --is-public {{ is_public }}{% if github_org and github_org != 'None' %} --github-org {{ github_org }}{% endif %}
     when: "{% if _copier_operation == 'copy' and should_create_repo and using_github %}true{% endif %}"
   - command: invoke create-repo-azdo --repo-name {{ repo_name }} --azdo-project {{ azdo_project_encoded }} --azdo-org {{ azdo_org }}
     when: "{% if _copier_operation == 'copy' and should_create_repo and using_azdo %}true{% endif %}"
-  - command: invoke set-repo-settings-github --github-repo-owner {{ github_repo_owner }} --repo-name {{ repo_name }} --is-public {{ is_public }}{% if github_org %} --github-org {{ github_org }}{% endif %}
+  - command: invoke set-repo-settings-github --github-repo-owner {{ github_repo_owner }} --repo-name {{ repo_name }} --is-public {{ is_public }}{% if github_org and github_org != 'None' %} --github-org {{ github_org }}{% endif %}
     when: "{% if _copier_operation == 'copy' and should_set_repo_settings and using_github %}true{% endif %}"
   - command: invoke initialize-repo-and-commit-files --lifecycle {{ lifecycle }} --developer-platform "{{ developer_platform }}" --repo-name {{ repo_name }}{% if using_github %} --github-username {{ github_username }}{% if github_repo_owner %} --github-repo-owner {{ github_repo_owner }}{% endif %}{% endif %}{% if using_azdo %} --azdo-org {{ azdo_org }} --azdo-project {{ azdo_project_encoded }}{% endif %}
     when: "{% if _copier_operation == 'copy' and should_create_repo %}true{% endif %}"
@@ -262,11 +261,11 @@ _tasks:
     when: "{% if _copier_operation == 'copy' and should_set_repo_settings and using_github %}true{% endif %}"
   - command: invoke create-pipelines-azdo --repo-name {{ repo_name }} --azdo-project {{ azdo_project_encoded }} --azdo-org {{ azdo_org }}
     when: "{% if _copier_operation == 'copy' and should_set_repo_settings and using_azdo %}true{% endif %}"
-  - command: invoke setup-mkdocs-ghpages --github-repo-owner {{ github_repo_owner }} --repo-name {{ repo_name }}
-    when: "{% if _copier_operation == 'copy' and mkdocs_ghpages and repo_setup_actions != 'None' %}true{% endif %}"
+  - command: invoke setup-zensical-ghpages --github-repo-owner {{ github_repo_owner }} --repo-name {{ repo_name }}
+    when: "{% if _copier_operation == 'copy' and zensical_ghpages and repo_setup_actions != 'None' %}true{% endif %}"
   - invoke delete-unneeded-template-files
 
 _message_after_update: |-
-  {% if lifecycle == 'Stable' and developer_platform == 'GitHub' and current_release_please_version_is_pre_1 %} It looks like you have switched this project's lifecycle to 'Stable' for the first time. If this is true, merge the following commit to main to have Release Please bump the version number properly.
+  {% if lifecycle == 'Stable' and developer_platform == 'GitHub' and current_release_please_version_is_pre_1 %} This project's lifecycle is 'Stable' but Release Please hasn't bumped the version to 1.0.0 yet. Merge the following commit to main to have it do so.
 
   git commit --allow-empty -m "chore: bump version to v1.0.0" -m "Release-As: 1.0.0"{% endif %}
